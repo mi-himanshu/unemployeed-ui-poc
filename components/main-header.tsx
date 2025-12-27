@@ -71,74 +71,76 @@ const PhaseIcon: React.FC<{ icon: string; isActive: boolean }> = ({ icon, isActi
 };
 
 const MainHeader: React.FC<MainHeaderProps> = ({ title, description, phases, onPhaseClick }) => {
+  const hasPhases = phases && phases.length > 0;
+
   return (
     <header className="text-center py-10">
       <div className="max-w-4xl mx-auto px-6 w-full">
         <h1 className="text-3xl font-semibold mb-1 text-[#f6f6f6]">{title}</h1>
-        <p className="text-sm text-[#f6f6f6]/80  mb-8 tracking-wide">{description}</p>
+        <p className={`text-sm text-[#f6f6f6]/80 tracking-wide ${hasPhases ? 'mb-8' : 'mb-0'}`}>{description}</p>
         
-        {/* Phases Section */}
-        <div className="relative">
-          <div className='w-fit mx-auto phases-container'>
-            <div className="flex flex-wrap justify-center items-start !gap-5 sm:gap-3 mb-4">
-              {phases.map((phase, index) => (
-                <div
-                  key={phase.id}
-                  className="flex min-w-[100px] sm:min-w-0 flex flex-col items-center cursor-pointer transition-opacity hover:opacity-80"
-                  onClick={() => onPhaseClick?.(phase.id)}
-                >
-                  <PhaseIcon icon={phase.icon} isActive={phase.isActive} />
-                  <div className="mt-3 text-center">
-                    <p className="text-sm font-medium text-[#f6f6f6] mb-1">{phase.name}</p>
-                    <p className="text-xs text-[#f6f6f6]/60">Phase {phase.number}</p>
+        {/* Phases Section - Only show if phases exist */}
+        {hasPhases && (
+          <div className="relative">
+            <div className='w-fit mx-auto phases-container'>
+              <div className="flex flex-wrap justify-center items-start !gap-5 sm:gap-3 mb-4">
+                {phases.map((phase, index) => (
+                  <div
+                    key={phase.id}
+                    className="flex min-w-[100px] sm:min-w-0 flex flex-col items-center cursor-pointer transition-opacity hover:opacity-80"
+                    onClick={() => onPhaseClick?.(phase.id)}
+                  >
+                    <PhaseIcon icon={phase.icon} isActive={phase.isActive} />
+                    <div className="mt-3 text-center">
+                      <p className="text-sm font-medium text-[#f6f6f6] mb-1">{phase.name}</p>
+                      <p className="text-xs text-[#f6f6f6]/60">Phase {phase.number}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+
+              {/* Active Phase Indicator Line - Fixed width pointer to active phase */}
+              <div 
+                className="relative h-0.5 bg-[#f6f6f6]/20 rounded-full overflow-hidden mx-auto"
+                style={{
+                  // Calculate total width: (number of phases * icon width) + (gaps between phases)
+                  width: `${phases.length * 100 + (phases.length - 1) * 20}px`,
+                  maxWidth: '100%',
+                }}
+              >
+                {/* Background track - matches phases container width, dimmed */}
+                
+                {/* Active indicator - fixed 100px width, centered on active phase */}
+                {phases.map((phase, index) => {
+                  if (!phase.isActive) return null;
+                  
+                  // Phase icon outer container: 100px
+                  // Gap between phases: 20px (gap-5 = 1.25rem = 20px)
+                  // Calculate left position to center indicator on active phase
+                  // Phase center = index * (iconWidth + gap) + (iconWidth / 2)
+                  // Indicator left = Phase center - (indicatorWidth / 2)
+                  const iconWidth = 100; // 100px outer container
+                  const gap = 20; // gap-5 = 20px
+                  const indicatorWidth = 100; // Same as icon outer container
+                  
+                  const phaseCenter = index * (iconWidth + gap) + (iconWidth / 2);
+                  const indicatorLeft = phaseCenter - (indicatorWidth / 2);
+                  
+                  return (
+                    <div
+                      key={`active-${phase.id}`}
+                      className="absolute top-0 h-full bg-[#f6f6f6] rounded-full transition-all duration-300 ease-out"
+                      style={{
+                        left: `${indicatorLeft}px`,
+                        width: `${indicatorWidth}px`,
+                      }}
+                    />
+                  );
+                })}
+              </div>
             </div>
-
-
-          {/* Active Phase Indicator Line - Fixed width pointer to active phase */}
-          <div 
-            className="relative h-0.5 bg-[#f6f6f6]/20 rounded-full overflow-hidden mx-auto"
-            style={{
-              // Calculate total width: (number of phases * icon width) + (gaps between phases)
-              width: `${phases.length * 100 + (phases.length - 1) * 20}px`,
-              maxWidth: '100%',
-            }}
-          >
-            {/* Background track - matches phases container width, dimmed */}
-            
-            {/* Active indicator - fixed 120px width, centered on active phase */}
-            {phases.map((phase, index) => {
-              if (!phase.isActive) return null;
-              
-              // Phase icon outer container: 120px
-              // Gap between phases: 20px (gap-5 = 1.25rem = 20px)
-              // Calculate left position to center indicator on active phase
-              // Phase center = index * (iconWidth + gap) + (iconWidth / 2)
-              // Indicator left = Phase center - (indicatorWidth / 2)
-              const iconWidth = 100; // 120px outer container
-              const gap = 20; // gap-5 = 20px
-              const indicatorWidth = 100; // Same as icon outer container
-              
-              const phaseCenter = index * (iconWidth + gap) + (iconWidth / 2);
-              const indicatorLeft = phaseCenter - (indicatorWidth / 2);
-              
-              return (
-                <div
-                  key={`active-${phase.id}`}
-                  className="absolute top-0 h-full bg-[#f6f6f6] rounded-full transition-all duration-300 ease-out"
-                  style={{
-                    left: `${indicatorLeft}px`,
-                    width: `${indicatorWidth}px`,
-                  }}
-                />
-              );
-            })}
           </div>
-          </div>
-          
-        </div>
+        )}
       </div>
     </header>
   );
