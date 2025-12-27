@@ -27,7 +27,7 @@ const RoadmapPage: React.FC = () => {
   const phaseInfo = activePhase ? `Phase ${activePhase.number} - ${activePhase.name}` : '';
 
   return (
-    <div className="bg-[#2b3030]">
+    <div className="bg-[#1a1a1a]/40">
       <Navbar />
       <MainHeader
         title="Your Learning Split Into Phases"

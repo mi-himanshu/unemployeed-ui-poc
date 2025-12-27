@@ -71,7 +71,7 @@ const DiagnosticsPage: React.FC = () => {
   };
 
   return (
-    <div className="bg-[#2b3030]">
+    <div className="bg-[#1a1a1a]/10">
       <Navbar />
       <MainHeader
         title="Let's Find What's Holding You Back"
