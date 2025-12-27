@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Reset HTML document */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: Montserrat, system-ui, sans-serif;
+  background-image: url('/assets/background.png');
+  background-position: top left;
+  background-repeat: no-repeat;
+  /* background-attachment: fixed; */
+  background-size: cover;
+}
