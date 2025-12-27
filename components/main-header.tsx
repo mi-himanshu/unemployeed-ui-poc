@@ -29,7 +29,7 @@ const PhaseIcon: React.FC<{ icon: string; isActive: boolean }> = ({ icon, isActi
         );
       case 'x':
         return (
-          <svg width="36" height="2436" viewBox="0 0 24 24" fill="none" stroke={iconColor} strokeWidth="2" opacity={iconOpacity}>
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={iconColor} strokeWidth="2" opacity={iconOpacity}>
             <path d="M18 6L6 18M6 6l12 12"/>
           </svg>
         );
@@ -73,7 +73,7 @@ const PhaseIcon: React.FC<{ icon: string; isActive: boolean }> = ({ icon, isActi
 const MainHeader: React.FC<MainHeaderProps> = ({ title, description, phases, onPhaseClick }) => {
   return (
     <header className="text-center py-10">
-      <div className="max-w-4xl mx-auto px-6">
+      <div className="max-w-4xl mx-auto px-6 w-full">
         <h1 className="text-3xl font-semibold mb-1 text-[#f6f6f6]">{title}</h1>
         <p className="text-sm text-[#f6f6f6]/80  mb-8 tracking-wide">{description}</p>
         
@@ -99,10 +99,11 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, description, phases, onP
 
           {/* Active Phase Indicator Line - Fixed width pointer to active phase */}
           <div 
-            className="relative h-0.5 bg-[#f6f6f6]/20 rounded-full overflow-hidden"
+            className="relative h-0.5 bg-[#f6f6f6]/20 rounded-full overflow-hidden mx-auto"
             style={{
               // Calculate total width: (number of phases * icon width) + (gaps between phases)
               width: `${phases.length * 100 + (phases.length - 1) * 20}px`,
+              maxWidth: '100%',
             }}
           >
             {/* Background track - matches phases container width, dimmed */}

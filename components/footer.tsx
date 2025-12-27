@@ -3,8 +3,8 @@ import Image from 'next/image';
 import Button from '@/components/ui/Button';
 
 const Footer: React.FC = () => (
-  <footer className="bg-charcoal text-white py-10">
-    <div className="max-w-7xl mx-auto px-6">
+  <footer className="bg-charcoal text-white py-10 w-full">
+    <div className="max-w-7xl mx-auto px-6 w-full">
       {/* Top Row - 2 Major Columns */}
       <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-8 mb-8">
         {/* Left Column - 4 Sub-columns */}
