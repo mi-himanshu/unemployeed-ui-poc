@@ -21,9 +21,9 @@ html {
 body {
   background-color: var(--background);
   background-image: url('/assets/background.png');
-  background-position: bottom right;
+  background-position: center;
   /* background-repeat: repeat; */
-  background-size: 120vw 120vh;
+  background-size: 200vw 200vh;
   min-height: 100vh;
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
@@ -39,7 +39,7 @@ body::after {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.15);
+  background-color: rgba(0, 0, 0, 0.10);
   z-index: 0;
   pointer-events: none;
 }

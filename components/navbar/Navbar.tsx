@@ -40,7 +40,7 @@ const Navbar: React.FC = () => {
   const progressDegree = profilePercentage * 3.6;
 
   return (
-    <nav className="w-full py-4 bg-transparent text-white">
+    <nav className="w-full py-4 text-white">
       <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
       {/* Left Section - Logo */}
       <div className="flex items-center">
