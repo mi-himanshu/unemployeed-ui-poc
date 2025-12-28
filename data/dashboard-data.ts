@@ -28,7 +28,7 @@ export const services: Service[] = [
     subtitle: 'Diagnose, roadmap, and skill-build',
     description: 'Pinpoint barriers, generate a roadmap, and follow a guided learning path to evolve your skills.',
     primaryLink: '/diagnostics',
-    primaryLinkText: 'Start Your Diagnostics +',
+    primaryLinkText: 'Start Your Diagnostics →',
     secondaryLink: '/roadmap',
     secondaryLinkText: 'Start Here',
     hintText: 'Recommended',
@@ -39,7 +39,7 @@ export const services: Service[] = [
     subtitle: 'Create, analyze, and refine resumes.',
     description: 'Craft resumes, compare against job descriptions, and track versions with AI-powered insights.',
     primaryLink: '/resume-studio',
-    primaryLinkText: 'Open Resume Studio +',
+    primaryLinkText: 'Open Resume Studio →',
   },
   {
     id: 'growth-circle',
@@ -47,7 +47,7 @@ export const services: Service[] = [
     subtitle: 'Engage, share, and grow together',
     description: 'Join discussions, form teams, and celebrate wins or losses with peers on the same journey.',
     primaryLink: '/community',
-    primaryLinkText: 'Enter Community +',
+    primaryLinkText: 'Enter Community →',
   },
 ];
 
@@ -78,7 +78,7 @@ export const resources: Resource[] = [
     subtitle: 'Step-by-Step Career Guides',
     description: 'Practical guides and insights that break down complex career challenges into simple, actionable steps you can apply right away.',
     link: '/guides',
-    linkText: 'Explore Guides +',
+    linkText: 'Explore Guides →',
   },
   {
     id: 'templates-checklists',
@@ -86,7 +86,7 @@ export const resources: Resource[] = [
     subtitle: 'Ready-to-Use Templates',
     description: 'Download polished resumes, cover letters, and interview checklists to save time and present your strengths with impact.',
     link: '/templates',
-    linkText: 'Create My Resume +',
+    linkText: 'Create My Resume →',
   },
   {
     id: 'external-learning',
@@ -94,7 +94,7 @@ export const resources: Resource[] = [
     subtitle: 'Curated Learning Resources',
     description: 'Handpicked courses, tutorials, and industry blogs to help you grow beyond the dashboard.',
     link: '/learning',
-    linkText: 'Join Community +',
+    linkText: 'Join Community →',
   },
 ];
 

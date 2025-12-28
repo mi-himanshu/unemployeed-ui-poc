@@ -124,12 +124,21 @@ const DashboardBody: React.FC<DashboardBodyProps> = ({
                   </div>
                   {/* Right Column - Title and Subtitle */}
                   <div className="flex-1">
-                    <h3
-                      className="text-white mb-1"
-                      style={{ fontSize: '20px', fontWeight: 600 }}
-                    >
-                      {service.title}
-                    </h3>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3
+                        className="text-white"
+                        style={{ fontSize: '20px', fontWeight: 600 }}
+                      >
+                        {service.title}
+                      </h3>
+                      {service.hintText && (
+                        <span 
+                          className="px-2 py-0.5 rounded bg-[#d1a990]/20 text-[#d1a990] text-[10px] font-medium"
+                        >
+                          {service.hintText}
+                        </span>
+                      )}
+                    </div>
                     <p
                       className="text-[#f6f6f6]/80"
                       style={{ fontSize: '14px', fontWeight: 400 }}
@@ -140,7 +149,7 @@ const DashboardBody: React.FC<DashboardBodyProps> = ({
                 </div>
 
                 {/* Row 2: Description */}
-                <div className="mb-4">
+                <div className="mb-5">
                   <p
                     className="text-[#f6f6f6]/60"
                     style={{ fontSize: '14px', fontWeight: 400, lineHeight: '1.5' }}
@@ -149,23 +158,14 @@ const DashboardBody: React.FC<DashboardBodyProps> = ({
                   </p>
                 </div>
 
-                {/* Row 3: CTA Link and Hint Text */}
-                <div className="mt-auto">
-                  <div className="flex flex-col items-start">
-                    <span
-                      className="text-[#d1a990]"
-                    >
-                      {service.primaryLinkText}
-                    </span>
-                    {service.hintText && (
-                      <p
-                        className="text-[#f6f6f6]/50 text-[12px]"
-                      >
-                        {service.hintText}
-                      </p>
-                    )}
-                  </div>
-                </div>
+              {/* Row 3: CTA Link */}
+              <div className="mt-auto">
+                <span 
+                  className="text-[#d1a990]"
+                >
+                  {service.primaryLinkText}
+                </span>
+              </div>
               </Link>
             ))}
           </div>
@@ -228,7 +228,7 @@ const DashboardBody: React.FC<DashboardBodyProps> = ({
             {resources.map((resource) => (
               <div
                 key={resource.id}
-                className="bg-[#2a3030]/50 p-6 rounded-lg border border-[#f6f6f6]/10"
+                className="bg-[#2a3030]/50 p-6 rounded-lg border border-[#f6f6f6]/10 flex flex-col"
               >
                 <div className="w-12 h-12 bg-[#f6f6f6]/10 rounded-sm mb-4 flex items-center justify-center">
                   {resource.id === 'guides-articles' && (
@@ -282,18 +282,20 @@ const DashboardBody: React.FC<DashboardBodyProps> = ({
                   {resource.subtitle}
                 </p>
                 <p
-                  className="text-[#f6f6f6]/60 mb-4"
+                  className="text-[#f6f6f6]/60 mb-4 flex-1"
                   style={{ fontSize: '14px', fontWeight: 400, lineHeight: '1.5' }}
                 >
                   {resource.description}
                 </p>
-                <Link
-                  href={resource.link}
-                  className="text-[#dc2626] hover:text-[#dc2626]/80 transition-colors"
-                  style={{ fontSize: '14px', fontWeight: 500 }}
-                >
-                  {resource.linkText}
-                </Link>
+                <div className="mt-auto">
+                  <Link
+                    href={resource.link}
+                    className="text-[#d1a990] hover:text-[#d1a990]/80 transition-colors"
+                    style={{ fontSize: '14px', fontWeight: 500 }}
+                  >
+                    {resource.linkText}
+                  </Link>
+                </div>
               </div>
             ))}
           </div>
