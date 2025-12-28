@@ -19,11 +19,11 @@ html {
 }
 
 body {
-  /* background-color: var(--background); */
-  background-image: url('/assets/background.png');
-  background-position: right bottom;
+  background-color: var(--background);
+  /* background-image: url('/assets/background.png'); */
+  background-position: top left;
   background-repeat: no-repeat;
-  background-size: 200vw 200vh;
+  background-size: 500vw 500vh;
   min-height: 100vh;
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
