@@ -1,19 +1,47 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import AuthNavbar from '@/components/navbar/AuthNavbar';
 import AuthFooter from '@/components/AuthFooter';
 import MainHeader from '@/components/main-header';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function LoginPage() {
+    const router = useRouter();
+    const { signIn, signInWithOAuth } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Handle login logic here
-        console.log('Login:', { email, password });
+        setLoading(true);
+        setError(null);
+
+        try {
+            const { error } = await signIn(email, password);
+            if (error) {
+                setError(error.message || 'Failed to sign in. Please check your credentials.');
+            } else {
+                router.push('/dashboard');
+            }
+        } catch (err: any) {
+            setError(err.message || 'An unexpected error occurred.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleOAuthSignIn = async (provider: 'google' | 'apple') => {
+        try {
+            await signInWithOAuth(provider);
+            // OAuth redirects automatically, no need to handle navigation here
+        } catch (err: any) {
+            setError(err.message || `Failed to sign in with ${provider}.`);
+        }
     };
 
     return (
@@ -35,6 +63,11 @@ export default function LoginPage() {
                             <div className="flex flex-col md:flex-row justify-center items-center gap-8 w-full max-w-5xl">
                                 {/* Left Column - Login Form */}
                                 <div className="flex flex-col items-center justify-center w-full md:w-80">
+                                    {error && (
+                                        <div className="w-full mb-4 p-3 bg-red-500/20 border border-red-500/50 text-red-200 rounded text-sm">
+                                            {error}
+                                        </div>
+                                    )}
                                     <form onSubmit={handleSubmit} className="flex flex-col gap-1 w-full">
                                         <div>
                                             <input
@@ -45,6 +78,7 @@ export default function LoginPage() {
                                                 className="w-full px-4 py-3 bg-[#2a3030] border border-[#f6f6f6]/20 rounded-sm text-[#f6f6f6] placeholder-[#f6f6f6]/50 focus:outline-none focus:border-[#f6f6f6]/40 transition-colors"
                                                 style={{ fontSize: '16px' }}
                                                 required
+                                                disabled={loading}
                                             />
                                         </div>
                                         <div>
@@ -56,14 +90,16 @@ export default function LoginPage() {
                                                 className="w-full px-4 py-3 bg-[#2a3030] border border-[#f6f6f6]/20 rounded-sm text-[#f6f6f6] placeholder-[#f6f6f6]/50 focus:outline-none focus:border-[#f6f6f6]/40 transition-colors"
                                                 style={{ fontSize: '16px' }}
                                                 required
+                                                disabled={loading}
                                             />
                                         </div>
                                         <button
                                             type="submit"
-                                            className="w-full py-3 px-6 mt-2 rounded-sm text-[#f6f6f6] text-base font-medium transition-all hover:opacity-90"
+                                            disabled={loading}
+                                            className="w-full py-3 px-6 mt-2 rounded-sm text-[#f6f6f6] text-base font-medium transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                                             style={{ backgroundColor: '#dc2626' }}
                                         >
-                                            Log In & Continue Evolving
+                                            {loading ? 'Signing in...' : 'Log In & Continue Evolving'}
                                         </button>
                                     </form>
                                 </div>
@@ -76,7 +112,9 @@ export default function LoginPage() {
                                 {/* Right Column - OAuth Buttons */}
                                 <div className="flex flex-col gap-1 justify-center w-full md:w-80">
                                     <button
-                                        className="w-full px-4 py-3 bg-[#0a0a0a] border border-[#f6f6f6]/20 rounded-lg text-[#f6f6f6] hover:bg-[#1a1a1a] transition-colors flex items-center justify-center gap-3"
+                                        onClick={() => handleOAuthSignIn('google')}
+                                        disabled={loading}
+                                        className="w-full px-4 py-3 bg-[#0a0a0a] border border-[#f6f6f6]/20 rounded-lg text-[#f6f6f6] hover:bg-[#1a1a1a] transition-colors flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
                                         style={{ fontSize: '16px' }}
                                     >
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -88,7 +126,9 @@ export default function LoginPage() {
                                         Sign in with Google
                                     </button>
                                     <button
-                                        className="w-full px-4 py-3 bg-[#0a0a0a] border border-[#f6f6f6]/20 rounded-lg text-[#f6f6f6] hover:bg-[#1a1a1a] transition-colors flex items-center justify-center gap-3"
+                                        onClick={() => handleOAuthSignIn('apple')}
+                                        disabled={loading}
+                                        className="w-full px-4 py-3 bg-[#0a0a0a] border border-[#f6f6f6]/20 rounded-lg text-[#f6f6f6] hover:bg-[#1a1a1a] transition-colors flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
                                         style={{ fontSize: '16px' }}
                                     >
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">

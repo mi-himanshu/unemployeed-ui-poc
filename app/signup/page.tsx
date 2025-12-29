@@ -1,25 +1,67 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import AuthNavbar from '@/components/navbar/AuthNavbar';
 import AuthFooter from '@/components/AuthFooter';
 import MainHeader from '@/components/main-header';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function SignupPage() {
+    const router = useRouter();
+    const { signUp, signInWithOAuth } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setLoading(true);
+        setError(null);
+
         // Validate passwords match
         if (password !== confirmPassword) {
-            alert('Passwords do not match');
+            setError('Passwords do not match');
+            setLoading(false);
             return;
         }
-        // Handle signup logic here
-        console.log('Signup:', { email, password });
+
+        // Validate password strength
+        if (password.length < 6) {
+            setError('Password must be at least 6 characters long');
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const { error } = await signUp(email, password);
+            if (error) {
+                setError(error.message || 'Failed to create account. Please try again.');
+            } else {
+                setSuccess(true);
+                // Redirect to dashboard after a short delay
+                setTimeout(() => {
+                    router.push('/dashboard');
+                }, 2000);
+            }
+        } catch (err: any) {
+            setError(err.message || 'An unexpected error occurred.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleOAuthSignIn = async (provider: 'google' | 'apple') => {
+        try {
+            await signInWithOAuth(provider);
+            // OAuth redirects automatically
+        } catch (err: any) {
+            setError(err.message || `Failed to sign up with ${provider}.`);
+        }
     };
 
     return (
@@ -41,6 +83,16 @@ export default function SignupPage() {
                             <div className="flex flex-col md:flex-row justify-center items-center gap-8 w-full max-w-5xl">
                                 {/* Left Column - Sign Up Form */}
                                 <div className="flex flex-col items-center justify-center w-full md:w-80">
+                                    {error && (
+                                        <div className="w-full mb-4 p-3 bg-red-500/20 border border-red-500/50 text-red-200 rounded text-sm">
+                                            {error}
+                                        </div>
+                                    )}
+                                    {success && (
+                                        <div className="w-full mb-4 p-3 bg-green-500/20 border border-green-500/50 text-green-200 rounded text-sm">
+                                            Account created successfully! Redirecting...
+                                        </div>
+                                    )}
                                     <form onSubmit={handleSubmit} className="flex flex-col gap-1 w-full">
                                         <div>
                                             <input
@@ -51,6 +103,7 @@ export default function SignupPage() {
                                                 className="w-full px-4 py-3 bg-[#2a3030] border border-[#f6f6f6]/20 rounded-sm text-[#f6f6f6] placeholder-[#f6f6f6]/50 focus:outline-none focus:border-[#f6f6f6]/40 transition-colors"
                                                 style={{ fontSize: '16px' }}
                                                 required
+                                                disabled={loading || success}
                                             />
                                         </div>
                                         <div>
@@ -62,6 +115,7 @@ export default function SignupPage() {
                                                 className="w-full px-4 py-3 bg-[#2a3030] border border-[#f6f6f6]/20 rounded-sm text-[#f6f6f6] placeholder-[#f6f6f6]/50 focus:outline-none focus:border-[#f6f6f6]/40 transition-colors"
                                                 style={{ fontSize: '16px' }}
                                                 required
+                                                disabled={loading || success}
                                             />
                                         </div>
                                         <div>
@@ -73,14 +127,16 @@ export default function SignupPage() {
                                                 className="w-full px-4 py-3 bg-[#2a3030] border border-[#f6f6f6]/20 rounded-sm text-[#f6f6f6] placeholder-[#f6f6f6]/50 focus:outline-none focus:border-[#f6f6f6]/40 transition-colors"
                                                 style={{ fontSize: '16px' }}
                                                 required
+                                                disabled={loading || success}
                                             />
                                         </div>
                                         <button
                                             type="submit"
-                                            className="w-full py-3 px-6 mt-2 rounded-sm text-[#f6f6f6] text-base font-medium transition-all hover:opacity-90"
+                                            disabled={loading || success}
+                                            className="w-full py-3 px-6 mt-2 rounded-sm text-[#f6f6f6] text-base font-medium transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                                             style={{ backgroundColor: '#dc2626' }}
                                         >
-                                            Sign Up & Start Evolving
+                                            {loading ? 'Creating account...' : success ? 'Account created!' : 'Sign Up & Start Evolving'}
                                         </button>
                                     </form>
                                 </div>
@@ -93,7 +149,9 @@ export default function SignupPage() {
                                 {/* Right Column - OAuth Buttons */}
                                 <div className="flex flex-col gap-1 justify-center w-full md:w-80">
                                     <button
-                                        className="w-full px-4 py-3 bg-[#0a0a0a] border border-[#f6f6f6]/20 rounded-lg text-[#f6f6f6] hover:bg-[#1a1a1a] transition-colors flex items-center justify-center gap-3"
+                                        onClick={() => handleOAuthSignIn('google')}
+                                        disabled={loading || success}
+                                        className="w-full px-4 py-3 bg-[#0a0a0a] border border-[#f6f6f6]/20 rounded-lg text-[#f6f6f6] hover:bg-[#1a1a1a] transition-colors flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
                                         style={{ fontSize: '16px' }}
                                     >
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -102,16 +160,18 @@ export default function SignupPage() {
                                             <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
                                             <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                                         </svg>
-                                        Sign in with Google
+                                        Sign up with Google
                                     </button>
                                     <button
-                                        className="w-full px-4 py-3 bg-[#0a0a0a] border border-[#f6f6f6]/20 rounded-lg text-[#f6f6f6] hover:bg-[#1a1a1a] transition-colors flex items-center justify-center gap-3"
+                                        onClick={() => handleOAuthSignIn('apple')}
+                                        disabled={loading || success}
+                                        className="w-full px-4 py-3 bg-[#0a0a0a] border border-[#f6f6f6]/20 rounded-lg text-[#f6f6f6] hover:bg-[#1a1a1a] transition-colors flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
                                         style={{ fontSize: '16px' }}
                                     >
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.96-3.24-1.44-1.56-.65-2.53-1.16-2.53-1.96 0-.72.73-1.18 1.48-1.65.9-.55 1.83-1.12 2.93-1.8 1.95-1.2 3.05-2.5 3.05-4.2 0-2.01-1.74-3.57-4.5-3.57-1.98 0-3.63.54-4.8 1.58l-.88-.7C4.68 4.9 6.78 4 9.2 4c3.58 0 6.32 2.03 6.32 5.32 0 2.4-1.37 4.24-3.37 5.72l-.01-.01c-.81.5-1.55.95-2.18 1.43-.35.27-.6.5-.6.82 0 .37.27.65.6.82.7.42 1.63.77 2.54 1.14l.7.3z" />
                                         </svg>
-                                        Sign in with Apple Account
+                                        Sign up with Apple Account
                                     </button>
                                 </div>
                             </div>

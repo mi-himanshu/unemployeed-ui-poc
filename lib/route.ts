@@ -4,7 +4,10 @@ export const ROUTES = {
     contact: '/contact',
     about: '/about',
     login: '/login',
-    diagnostic: '/diagnostic',
+    diagnostic: '/diagnostics',
+    profile: '/profile',
+    dashboard: '/dashboard',
+    roadmap: '/roadmap',
   } as const
   
   export type AppRoute = (typeof ROUTES)[keyof typeof ROUTES]

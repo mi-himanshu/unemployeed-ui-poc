@@ -2,15 +2,9 @@
 
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import Button from '@/components/ui/Button';
-
-// Dummy data - will be replaced with backend integration later
-const userData = {
-  fullName: 'Himanshu Mishra',
-  username: '@mihimanshu',
-  profileCompletion: 'Profile 40% Complete',
-  avatar: '', // Placeholder - replace with actual avatar
-};
+import { useAuth } from '@/contexts/AuthContext';
 
 const planData = {
   currentPlan: 'Starter Plan', // Options: 'Free Plan', 'Basic Plan', 'Member Plan', 'Pro Plan'
@@ -18,6 +12,26 @@ const planData = {
 };
 
 const Navbar: React.FC = () => {
+  const { user, profile } = useAuth();
+  
+  // Calculate profile completion
+  const calculateProfileCompletion = () => {
+    if (!profile) return 0;
+    const fields = ['full_name', 'bio', 'location', 'linkedin_url', 'github_url', 'website_url', 'avatar_url'];
+    const filledFields = fields.filter(field => {
+      const value = profile[field as keyof typeof profile];
+      return value && value.toString().trim() !== '';
+    });
+    return Math.round((filledFields.length / fields.length) * 100);
+  };
+
+  const profileCompletion = calculateProfileCompletion();
+  const userData = {
+    fullName: profile?.full_name || user?.email?.split('@')[0] || 'User',
+    username: user?.email?.split('@')[0] || '',
+    profileCompletion: `Profile ${profileCompletion}% Complete`,
+    avatar: profile?.avatar_url || '',
+  };
   const getPlanDisplayName = (plan: string) => {
     if (plan.includes('Starter')) return 'Starter Plan';
     if (plan.includes('Free')) return 'Free Plan';
@@ -27,31 +41,31 @@ const Navbar: React.FC = () => {
     return plan;
   };
 
-  // Extract percentage from profile completion string
-  const getProfilePercentage = (completion: string): number => {
-    const match = completion.match(/(\d+)%/);
-    return match ? parseInt(match[1], 10) : 0;
-  };
-
-  const profilePercentage = getProfilePercentage(userData.profileCompletion);
+  // Use the calculated profile completion
+  const profilePercentage = profileCompletion;
   
   // CSS conic-gradient calculation for circular progress
   // Degree = percentage * 3.6 (since 360 degrees / 100 = 3.6)
   const progressDegree = profilePercentage * 3.6;
+
+  // Determine logo link based on auth status
+  const logoLink = user ? '/dashboard' : '/';
 
   return (
     <nav className="w-full py-4 text-white">
       <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
       {/* Left Section - Logo */}
       <div className="flex items-center">
-        <Image
-          src="/assets/logo.png"
-          alt="unemployeed - FROM STUCK TO UNSTOPPABLE"
-          width={180}
-          height={40}
-          className="h-auto"
-          priority
-        />
+        <Link href={logoLink}>
+          <Image
+            src="/assets/logo.png"
+            alt="unemployeed - FROM STUCK TO UNSTOPPABLE"
+            width={180}
+            height={40}
+            className="h-auto cursor-pointer hover:opacity-80 transition-opacity"
+            priority
+          />
+        </Link>
       </div>
 
       {/* Center Section - Plan Status */}
@@ -151,10 +165,11 @@ const Navbar: React.FC = () => {
         </div>
 
         {/* Settings Icon */}
-        <button 
-          className="p-2 hover:bg-[#f6f6f6]/10 rounded transition-colors"
-          aria-label="Settings"
-        >
+        <Link href="/profile">
+          <button 
+            className="p-2 hover:bg-[#f6f6f6]/10 rounded transition-colors"
+            aria-label="Profile Settings"
+          >
           <svg 
             width="32" 
             height="28" 
@@ -187,6 +202,7 @@ const Navbar: React.FC = () => {
             />
           </svg>
         </button>
+        </Link>
       </div>
       </div>
     </nav>
