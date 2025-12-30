@@ -27,9 +27,8 @@ Create a `.env.local` file in the `web-app` directory:
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
-# Backend Service URLs
-NEXT_PUBLIC_USER_SERVICE_URL=http://localhost:8001
-NEXT_PUBLIC_DIAGNOSTICS_SERVICE_URL=http://localhost:8006
+# API Gateway URL (all requests go through the gateway)
+NEXT_PUBLIC_GATEWAY_URL=http://localhost:8000
 ```
 
 ### Getting Supabase Credentials
@@ -53,12 +52,16 @@ NEXT_PUBLIC_DIAGNOSTICS_SERVICE_URL=http://localhost:8006
 
 1. Start the backend services (from platform-core directory):
 ```bash
+# Start API Gateway (required - all requests go through this)
+cd services/api-gateway
+python -m uvicorn app:app --host 0.0.0.0 --port 8000 --reload
+
 # Start user-service
-cd services/user-service
+cd ../user-service
 python -m uvicorn app:app --host 0.0.0.0 --port 8001
 
 # Start career-diagnostics service
-cd services/career-diagnostics
+cd ../career-diagnostics
 python -m uvicorn app:app --host 0.0.0.0 --port 8006
 ```
 
@@ -69,6 +72,8 @@ npm run dev
 ```
 
 3. Open http://localhost:3000 in your browser
+
+**Note**: The API Gateway must be running before the frontend can make API calls. All requests from the frontend go through the gateway, which handles authentication and routes to backend services.
 
 ## Features Integrated
 
@@ -104,8 +109,10 @@ npm run dev
 1. User signs up/logs in via Supabase Auth
 2. Supabase returns JWT token
 3. Token is stored in session
-4. All API requests include token in Authorization header
-5. Backend services verify token with Supabase
+4. Frontend sends requests to API Gateway with token in Authorization header
+5. API Gateway verifies token with Supabase and extracts user data
+6. API Gateway forwards request to backend service with token
+7. Backend service verifies token (can use same token or gateway can inject user context)
 
 ### Diagnostics Flow
 1. User starts diagnostic → `POST /api/v1/diagnostics/start`

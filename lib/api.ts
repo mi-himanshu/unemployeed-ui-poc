@@ -1,10 +1,9 @@
 /**
- * API client for backend services
+ * API client for backend services via API Gateway
  */
 
-// Backend service URLs
-const USER_SERVICE_URL = process.env.NEXT_PUBLIC_USER_SERVICE_URL || 'http://localhost:8001';
-const DIAGNOSTICS_SERVICE_URL = process.env.NEXT_PUBLIC_DIAGNOSTICS_SERVICE_URL || 'http://localhost:8006';
+// API Gateway URL - all requests go through the gateway
+const GATEWAY_URL = process.env.NEXT_PUBLIC_GATEWAY_URL || 'http://localhost:8000';
 
 /**
  * Get authentication token from Supabase
@@ -19,25 +18,25 @@ async function getAuthToken(): Promise<string | null> {
 }
 
 /**
- * Make authenticated API request
+ * Make authenticated API request through gateway
  */
 async function apiRequest<T>(
-  baseUrl: string,
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
   const token = await getAuthToken();
   
+  if (!token) {
+    throw new Error('Authentication required. Please log in.');
+  }
+  
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`,
     ...(options.headers as Record<string, string>),
   };
 
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-
-  const response = await fetch(`${baseUrl}${endpoint}`, {
+  const response = await fetch(`${GATEWAY_URL}${endpoint}`, {
     ...options,
     headers,
   });
@@ -149,7 +148,6 @@ export const diagnosticsApi = {
    */
   async startDiagnostic(): Promise<StartDiagnosticResponse> {
     return apiRequest<StartDiagnosticResponse>(
-      DIAGNOSTICS_SERVICE_URL,
       '/api/v1/diagnostics/start',
       { method: 'POST' }
     );
@@ -163,7 +161,6 @@ export const diagnosticsApi = {
     responses: Record<string, string>
   ): Promise<SubmitResponseResponse> {
     return apiRequest<SubmitResponseResponse>(
-      DIAGNOSTICS_SERVICE_URL,
       `/api/v1/diagnostics/${sessionId}/respond`,
       {
         method: 'POST',
@@ -177,7 +174,6 @@ export const diagnosticsApi = {
    */
   async completeDiagnostic(sessionId: string): Promise<CompleteDiagnosticResponse> {
     return apiRequest<CompleteDiagnosticResponse>(
-      DIAGNOSTICS_SERVICE_URL,
       `/api/v1/diagnostics/${sessionId}/complete`,
       { method: 'POST' }
     );
@@ -188,7 +184,6 @@ export const diagnosticsApi = {
    */
   async getDiagnosticStatus(sessionId: string) {
     return apiRequest(
-      DIAGNOSTICS_SERVICE_URL,
       `/api/v1/diagnostics/${sessionId}`,
       { method: 'GET' }
     );
@@ -207,7 +202,6 @@ export const roadmapApi = {
     targetRole?: string
   ): Promise<GenerateRoadmapResponse> {
     return apiRequest<GenerateRoadmapResponse>(
-      DIAGNOSTICS_SERVICE_URL,
       '/api/v1/roadmaps/generate',
       {
         method: 'POST',
@@ -225,7 +219,6 @@ export const roadmapApi = {
    */
   async getRoadmap(roadmapId: string): Promise<RoadmapResponse> {
     return apiRequest<RoadmapResponse>(
-      DIAGNOSTICS_SERVICE_URL,
       `/api/v1/roadmaps/${roadmapId}`,
       { method: 'GET' }
     );
@@ -236,7 +229,6 @@ export const roadmapApi = {
    */
   async listRoadmaps(): Promise<RoadmapListResponse> {
     return apiRequest<RoadmapListResponse>(
-      DIAGNOSTICS_SERVICE_URL,
       '/api/v1/roadmaps',
       { method: 'GET' }
     );
@@ -252,7 +244,6 @@ export const roadmapApi = {
     completedAt?: string
   ) {
     return apiRequest(
-      DIAGNOSTICS_SERVICE_URL,
       `/api/v1/roadmaps/${roadmapId}/milestones/${milestoneId}`,
       {
         method: 'PUT',
@@ -273,7 +264,6 @@ export const userApi = {
    */
   async getProfile(): Promise<UserProfile> {
     return apiRequest<UserProfile>(
-      USER_SERVICE_URL,
       '/api/v1/users/me',
       { method: 'GET' }
     );
@@ -284,7 +274,6 @@ export const userApi = {
    */
   async updateProfile(updateData: Partial<UserProfile>): Promise<UserProfile> {
     return apiRequest<UserProfile>(
-      USER_SERVICE_URL,
       '/api/v1/users/me',
       {
         method: 'PUT',
