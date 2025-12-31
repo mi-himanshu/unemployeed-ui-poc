@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import AuthNavbar from '@/components/navbar/AuthNavbar';
@@ -9,7 +9,7 @@ import MainHeader from '@/components/main-header';
 import { useAuth } from '@/contexts/AuthContext';
 import { authApi } from '@/lib/api';
 
-export default function VerifyEmailPage() {
+function VerifyEmailPageContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { user, signOut } = useAuth();
@@ -293,6 +293,22 @@ export default function VerifyEmailPage() {
             </main>
             <AuthFooter />
         </div>
+    );
+}
+
+export default function VerifyEmailPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex flex-col bg-transparent">
+                <AuthNavbar currentPage="verify" />
+                <main className="flex-1 py-12 px-6 flex items-center justify-center">
+                    <div className="text-[#f6f6f6]">Loading...</div>
+                </main>
+                <AuthFooter />
+            </div>
+        }>
+            <VerifyEmailPageContent />
+        </Suspense>
     );
 }
 

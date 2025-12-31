@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Navbar from '@/components/navbar/Navbar';
 import Footer from '@/components/footer';
@@ -48,7 +48,7 @@ const mapMilestoneToFrontend = (backendMilestone: any, index: number, total: num
   };
 };
 
-const RoadmapPage: React.FC = () => {
+const RoadmapPageContent: React.FC = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
@@ -160,6 +160,18 @@ const RoadmapPage: React.FC = () => {
       />
       <Footer />
     </div>
+  );
+};
+
+const RoadmapPage: React.FC = () => {
+  return (
+    <Suspense fallback={
+      <div className="bg-[#1a1a1a]/40 min-h-screen flex items-center justify-center">
+        <div className="text-[#f6f6f6]">Loading your roadmap...</div>
+      </div>
+    }>
+      <RoadmapPageContent />
+    </Suspense>
   );
 };
 

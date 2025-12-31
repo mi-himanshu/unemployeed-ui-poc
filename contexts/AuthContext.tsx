@@ -20,7 +20,7 @@ interface User {
 
 interface Session {
   access_token: string;
-  refresh_token: string;
+  refresh_token?: string;
   expires_in?: number;
   expires_at?: number;
   token_type?: string;
@@ -134,7 +134,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (response.ok) {
           const data = await response.json();
           setUser(data.user);
-          setSession({ access_token: oauthToken });
+          // Get refresh token from localStorage if available
+          const refreshToken = typeof window !== 'undefined' ? localStorage.getItem('refresh_token') : null;
+          setSession({ 
+            access_token: oauthToken,
+            refresh_token: refreshToken || undefined
+          });
           setEmailVerified(data.user?.email_verified || false);
           await refreshProfile();
           await checkEmailVerification();
@@ -166,7 +171,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (response.ok) {
           const data = await response.json();
           setUser(data.user);
-          setSession({ access_token: token });
+          // Get refresh token from localStorage if available
+          const refreshToken = typeof window !== 'undefined' ? localStorage.getItem('refresh_token') : null;
+          setSession({ 
+            access_token: token,
+            refresh_token: refreshToken || undefined
+          });
           setEmailVerified(data.user?.email_verified || false);
           await refreshProfile();
           await checkEmailVerification();
