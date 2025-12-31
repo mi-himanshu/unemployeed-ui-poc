@@ -289,12 +289,16 @@ export const authApi = {
    */
   async resendVerificationEmail(email: string): Promise<{ success: boolean; message: string }> {
     const GATEWAY_URL = process.env.NEXT_PUBLIC_GATEWAY_URL || 'http://localhost:8000';
+    // Get the frontend URL for email redirect
+    const frontendUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
+    const redirectTo = `${frontendUrl}/verify-email`;
+    
     const response = await fetch(`${GATEWAY_URL}/api/v1/auth/resend-verification`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ email, redirect_to: redirectTo }),
     });
 
     if (!response.ok) {

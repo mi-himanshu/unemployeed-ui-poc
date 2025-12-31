@@ -231,12 +231,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = async (email: string, password: string) => {
     try {
+      // Get the frontend URL for email redirect
+      const frontendUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
+      const redirectTo = `${frontendUrl}/verify-email`;
+      
       const response = await fetch(`${GATEWAY_URL}/api/v1/auth/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, redirect_to: redirectTo }),
       });
 
       const data = await response.json();
