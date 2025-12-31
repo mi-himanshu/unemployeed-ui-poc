@@ -26,6 +26,7 @@ export default function LoginPage() {
             if (error) {
                 setError(error.message || 'Failed to sign in. Please check your credentials.');
             } else {
+                // Check email verification status - will be handled by dashboard page
                 router.push('/dashboard');
             }
         } catch (err: any) {

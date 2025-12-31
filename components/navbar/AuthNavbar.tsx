@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 interface AuthNavbarProps {
-  currentPage: 'login' | 'signup';
+  currentPage: 'login' | 'signup' | 'verify';
 }
 
 const AuthNavbar: React.FC<AuthNavbarProps> = ({ currentPage }) => {
@@ -67,6 +67,15 @@ const AuthNavbar: React.FC<AuthNavbarProps> = ({ currentPage }) => {
                 style={{ backgroundColor: '#dc2626' }}
               >
                 Sign Up
+              </button>
+            </Link>
+          ) : currentPage === 'signup' ? (
+            <Link href="/login">
+              <button
+                className="px-6 py-2 rounded-md text-sm text-[#f6f6f6] font-medium transition-all hover:opacity-90"
+                style={{ backgroundColor: '#dc2626' }}
+              >
+                Login
               </button>
             </Link>
           ) : (

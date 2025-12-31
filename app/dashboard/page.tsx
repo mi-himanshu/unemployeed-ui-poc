@@ -18,7 +18,7 @@ import { roadmapApi } from '@/lib/api';
 
 const DashboardPage: React.FC = () => {
   const router = useRouter();
-  const { user, profile, loading: authLoading } = useAuth();
+  const { user, profile, loading: authLoading, emailVerified } = useAuth();
   const [hasRoadmap, setHasRoadmap] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -27,6 +27,12 @@ const DashboardPage: React.FC = () => {
     
     if (!user) {
       router.push('/login');
+      return;
+    }
+
+    // Check email verification
+    if (emailVerified === false) {
+      router.push('/verify-email');
       return;
     }
 

@@ -6,15 +6,13 @@
 const GATEWAY_URL = process.env.NEXT_PUBLIC_GATEWAY_URL || 'http://localhost:8000';
 
 /**
- * Get authentication token from Supabase
+ * Get authentication token from localStorage (set by AuthContext)
  */
 async function getAuthToken(): Promise<string | null> {
   if (typeof window === 'undefined') return null;
   
-  // Dynamic import to avoid circular dependency
-  const { supabase } = await import('./supabase');
-  const { data: { session } } = await supabase.auth.getSession();
-  return session?.access_token || null;
+  // Token is stored by AuthContext after login/signup
+  return localStorage.getItem('auth_token');
 }
 
 /**
@@ -279,6 +277,62 @@ export const userApi = {
         method: 'PUT',
         body: JSON.stringify(updateData),
       }
+    );
+  },
+};
+
+// ==================== Auth API ====================
+
+export const authApi = {
+  /**
+   * Resend verification email
+   */
+  async resendVerificationEmail(email: string): Promise<{ success: boolean; message: string }> {
+    const GATEWAY_URL = process.env.NEXT_PUBLIC_GATEWAY_URL || 'http://localhost:8000';
+    const response = await fetch(`${GATEWAY_URL}/api/v1/auth/resend-verification`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ detail: response.statusText }));
+      throw new Error(error.detail || 'Failed to resend verification email');
+    }
+
+    return response.json();
+  },
+
+  /**
+   * Verify email with token
+   */
+  async verifyEmail(token: string, tokenHash?: string, type: string = 'email'): Promise<{ user: any; session: any }> {
+    const GATEWAY_URL = process.env.NEXT_PUBLIC_GATEWAY_URL || 'http://localhost:8000';
+    const response = await fetch(`${GATEWAY_URL}/api/v1/auth/verify-email`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ token, token_hash: tokenHash, type }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ detail: response.statusText }));
+      throw new Error(error.detail || 'Failed to verify email');
+    }
+
+    return response.json();
+  },
+
+  /**
+   * Check if email is verified
+   */
+  async checkEmailVerification(): Promise<{ email_verified: boolean }> {
+    return apiRequest<{ email_verified: boolean }>(
+      '/api/v1/auth/check-verification',
+      { method: 'GET' }
     );
   },
 };

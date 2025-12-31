@@ -43,9 +43,9 @@ export default function SignupPage() {
                 setError(error.message || 'Failed to create account. Please try again.');
             } else {
                 setSuccess(true);
-                // Redirect to dashboard after a short delay
+                // Redirect to email verification page
                 setTimeout(() => {
-                    router.push('/dashboard');
+                    router.push('/verify-email');
                 }, 2000);
             }
         } catch (err: any) {
