@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import AuthNavbar from '@/components/navbar/AuthNavbar';
@@ -9,7 +9,7 @@ import MainHeader from '@/components/main-header';
 import { authApi } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { signIn } = useAuth();
@@ -217,6 +217,22 @@ export default function ResetPasswordPage() {
 
             <AuthFooter />
         </div>
+    );
+}
+
+export default function ResetPasswordPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex flex-col bg-transparent">
+                <AuthNavbar currentPage="login" />
+                <main className="flex-1 py-12 px-6 flex items-center justify-center">
+                    <div className="text-[#f6f6f6]">Loading...</div>
+                </main>
+                <AuthFooter />
+            </div>
+        }>
+            <ResetPasswordContent />
+        </Suspense>
     );
 }
 
