@@ -7,6 +7,7 @@ interface DiagnosticsBodyProps {
   currentQuestion: DiagnosticQuestion;
   currentQuestionIndex: number;
   totalQuestions: number;
+  isFollowupSection?: boolean;
   userAnswer: string;
   onAnswerChange: (answer: string) => void;
   onPrevious: () => void;
@@ -58,6 +59,7 @@ const DiagnosticsBody: React.FC<DiagnosticsBodyProps> = ({
   currentQuestion,
   currentQuestionIndex,
   totalQuestions,
+  isFollowupSection = false,
   userAnswer,
   onAnswerChange,
   onPrevious,
@@ -71,22 +73,34 @@ const DiagnosticsBody: React.FC<DiagnosticsBodyProps> = ({
   return (
     <main className="py-10 bg-[#1a1a1a]">
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-8">
-          {/* Left Sidebar - Categories */}
-          <aside className="lg:sticky lg:top-8 h-fit">
-            <div className="space-y-1">
-              {categories.map((category) => (
-                <CategoryItem 
-                  key={category.id} 
-                  category={category} 
-                  onCategoryClick={onCategoryClick}
-                />
-              ))}
-            </div>
-          </aside>
-
+        <div className={`grid grid-cols-1 ${isFollowupSection ? 'lg:grid-cols-1' : 'lg:grid-cols-[300px_1fr]'} gap-8`}>
+          {/* Left Sidebar - Categories (only show for initial questions) */}
+          {!isFollowupSection && (
+            <aside className="lg:sticky lg:top-8 h-fit">
+              <div className="space-y-1">
+                {categories.map((category) => (
+                  <CategoryItem 
+                    key={category.id} 
+                    category={category} 
+                    onCategoryClick={onCategoryClick}
+                  />
+                ))}
+              </div>
+            </aside>
+          )}
+          
           {/* Right Column - Question Content */}
           <div className="flex flex-col">
+            {/* Follow-up Section Header - Show prominently at top when in follow-up section */}
+            {isFollowupSection && (
+              <div className="mb-8 p-6 bg-[#2a3030] rounded-lg border border-[#f6f6f6]/10">
+                <h3 className="text-xl font-semibold text-[#f6f6f6] mb-2">Follow-up Questions</h3>
+                <p className="text-sm text-[#f6f6f6]/70">
+                  We need a bit more information to complete your diagnostic. Please answer these additional questions to help us create your personalized roadmap.
+                </p>
+              </div>
+            )}
+            
             {/* Question Section */}
             <div className="mb-8">
               <h2 
@@ -160,8 +174,9 @@ const DiagnosticsBody: React.FC<DiagnosticsBodyProps> = ({
                       variant="ghost" 
                       onClick={onPrevious}
                       className="text-sm"
+                      title="Previous question (← Arrow key)"
                     >
-                      Prev
+                      ← Prev
                     </Button>
                   )}
                   <Button 
@@ -169,8 +184,9 @@ const DiagnosticsBody: React.FC<DiagnosticsBodyProps> = ({
                     onClick={onNext}
                     className="text-sm"
                     disabled={isLastQuestion && !canSubmit}
+                    title={isLastQuestion ? "Submit (Enter key)" : "Next question (→ Arrow key)"}
                   >
-                    {isLastQuestion ? 'Submit Info' : 'Next'}
+                    {isLastQuestion ? 'Submit Info →' : 'Next →'}
                   </Button>
                 </div>
               </div>

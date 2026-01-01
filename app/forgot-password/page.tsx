@@ -4,13 +4,16 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import AuthNavbar from '@/components/navbar/AuthNavbar';
+import Navbar from '@/components/navbar/Navbar';
 import AuthFooter from '@/components/AuthFooter';
 import MainHeader from '@/components/main-header';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import { authApi } from '@/lib/api';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function ForgotPasswordPage() {
     const router = useRouter();
+    const { user } = useAuth();
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -53,7 +56,8 @@ export default function ForgotPasswordPage() {
     return (
         <div className="min-h-screen flex flex-col bg-transparent relative">
             <AnimatedBackground gradientId="waveGradientForgotPassword" />
-            <AuthNavbar currentPage="login" />
+            {/* Show Navbar if logged in, AuthNavbar if not */}
+            {user ? <Navbar /> : <AuthNavbar currentPage="login" />}
 
             <main className="flex-1 py-12 px-6">
                 <div className="max-w-7xl mt-12 mx-auto px-6 w-full">

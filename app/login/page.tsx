@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import AuthNavbar from '@/components/navbar/AuthNavbar';
+import Navbar from '@/components/navbar/Navbar';
 import AuthFooter from '@/components/AuthFooter';
 import MainHeader from '@/components/main-header';
 import AnimatedBackground from '@/components/AnimatedBackground';
@@ -14,10 +15,21 @@ import { getErrorMessage } from '@/lib/error-messages';
 function LoginPageContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const { signIn, signInWithOAuth } = useAuth();
+    const { user, loading: authLoading, signIn, signInWithOAuth } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
+
+    // Redirect to dashboard if already logged in (middleware should handle this, but double-check)
+    useEffect(() => {
+        if (authLoading) return;
+        
+        if (user) {
+            // User is already logged in, redirect to dashboard or original page
+            const redirectTo = searchParams.get('redirect') || '/dashboard';
+            router.replace(redirectTo);
+        }
+    }, [user, authLoading, router, searchParams]);
 
     // Check for OAuth errors in URL params
     useEffect(() => {
@@ -50,7 +62,7 @@ function LoginPageContent() {
         setLoading(true);
 
         try {
-            const { error } = await signIn(email, password);
+            const { error, emailVerified } = await signIn(email, password);
             if (error) {
                 const errorInfo = getErrorMessage(error, 'login');
                 toast.error(errorInfo.userMessage, {
@@ -66,9 +78,20 @@ function LoginPageContent() {
                     }, 1000);
                 }
             } else {
-                toast.success('Welcome back! Redirecting to your dashboard...');
-                // Check email verification status - will be handled by dashboard page
-                router.push('/dashboard');
+                // Check email verification status
+                if (emailVerified === false) {
+                    // Email not verified - redirect to verification page with friendly message
+                    toast('Please verify your email to continue', {
+                        icon: '📧',
+                        duration: 4000,
+                    });
+                    router.push('/verify-email');
+                } else {
+                    // Email is verified - check for redirect parameter or go to dashboard
+                    const redirectTo = searchParams.get('redirect') || '/dashboard';
+                    toast.success('Welcome back! Redirecting...');
+                    router.push(redirectTo);
+                }
             }
         } catch (err: any) {
             const errorInfo = getErrorMessage(err, 'login');
@@ -111,7 +134,8 @@ function LoginPageContent() {
     return (
         <div className="min-h-screen flex flex-col bg-transparent relative">
             <AnimatedBackground gradientId="waveGradientLogin" />
-            <AuthNavbar currentPage="login" />
+            {/* Show Navbar if logged in, AuthNavbar if not */}
+            {user ? <Navbar /> : <AuthNavbar currentPage="login" />}
 
             <main className="flex-1 py-12 px-6">
                 <div className="max-w-7xl mt-12 mx-auto px-6 w-full">
@@ -169,15 +193,15 @@ function LoginPageContent() {
                                     <span className="text-[#f6f6f6]/60 font-medium" style={{ fontSize: '16px' }}>or</span>
                                 </div>
 
-                                {/* Right Column - OAuth Buttons */}
+                                {/* Right Column - OAuth Buttons (Disabled - Coming Soon) */}
                                 <div className="flex flex-col gap-1 justify-center w-full md:w-80">
                                     <button
-                                        onClick={() => handleOAuthSignIn('google')}
-                                        disabled={loading}
-                                        className="w-full px-4 py-3 bg-[#0a0a0a] border border-[#f6f6f6]/20 rounded-lg text-[#f6f6f6] hover:bg-[#1a1a1a] transition-colors flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        disabled={true}
+                                        className="w-full px-4 py-3 bg-[#0a0a0a] border border-[#f6f6f6]/10 rounded-lg text-[#f6f6f6]/40 transition-colors flex items-center justify-center gap-3 opacity-50 cursor-not-allowed"
                                         style={{ fontSize: '16px' }}
+                                        title="Coming soon"
                                     >
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" opacity="0.5">
                                             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
                                             <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
                                             <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
@@ -186,12 +210,12 @@ function LoginPageContent() {
                                         Sign in with Google
                                     </button>
                                     <button
-                                        onClick={() => handleOAuthSignIn('apple')}
-                                        disabled={loading}
-                                        className="w-full px-4 py-3 bg-[#0a0a0a] border border-[#f6f6f6]/20 rounded-lg text-[#f6f6f6] hover:bg-[#1a1a1a] transition-colors flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        disabled={true}
+                                        className="w-full px-4 py-3 bg-[#0a0a0a] border border-[#f6f6f6]/10 rounded-lg text-[#f6f6f6]/40 transition-colors flex items-center justify-center gap-3 opacity-50 cursor-not-allowed"
                                         style={{ fontSize: '16px' }}
+                                        title="Coming soon"
                                     >
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" opacity="0.5">
                                             <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.96-3.24-1.44-1.56-.65-2.53-1.16-2.53-1.96 0-.72.73-1.18 1.48-1.65.9-.55 1.83-1.12 2.93-1.8 1.95-1.2 3.05-2.5 3.05-4.2 0-2.01-1.74-3.57-4.5-3.57-1.98 0-3.63.54-4.8 1.58l-.88-.7C4.68 4.9 6.78 4 9.2 4c3.58 0 6.32 2.03 6.32 5.32 0 2.4-1.37 4.24-3.37 5.72l-.01-.01c-.81.5-1.55.95-2.18 1.43-.35.27-.6.5-.6.82 0 .37.27.65.6.82.7.42 1.63.77 2.54 1.14l.7.3z" />
                                         </svg>
                                         Sign in with Apple Account
@@ -238,7 +262,7 @@ export default function LoginPage() {
         <Suspense fallback={
             <div className="min-h-screen flex flex-col bg-transparent relative">
                 <AnimatedBackground gradientId="waveGradientLogin" />
-                <AuthNavbar currentPage="login" />
+                <Navbar />
                 <main className="flex-1 py-12 px-6 flex items-center justify-center">
                     <div className="text-[#f6f6f6]">Loading...</div>
                 </main>

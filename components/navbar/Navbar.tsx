@@ -139,20 +139,18 @@ const Navbar: React.FC = () => {
                   >
                     Career Compass
                   </Link>
-                  <Link
-                    href="/resume-studio"
-                    className="block px-4 py-3 text-[#f6f6f6] hover:bg-[#f6f6f6]/10 transition-colors"
-                    onClick={() => setServicesDropdownOpen(false)}
+                  <span
+                    className="block px-4 py-3 text-[#f6f6f6]/40 cursor-not-allowed"
+                    title="Coming soon"
                   >
                     Resume Studio
-                  </Link>
-                  <Link
-                    href="/growth-circle"
-                    className="block px-4 py-3 text-[#f6f6f6] hover:bg-[#f6f6f6]/10 transition-colors"
-                    onClick={() => setServicesDropdownOpen(false)}
+                  </span>
+                  <span
+                    className="block px-4 py-3 text-[#f6f6f6]/40 cursor-not-allowed"
+                    title="Coming soon"
                   >
                     Growth Circle
-                  </Link>
+                  </span>
                 </div>
               )}
             </div>
@@ -172,10 +170,11 @@ const Navbar: React.FC = () => {
             {showUpgradeButton && (
               <Button 
                 variant="primary" 
-                className="text-sm"
-                onClick={() => {
-                  // Handle upgrade navigation
-                  window.location.href = '/pricing';
+                className="text-sm opacity-50 cursor-not-allowed"
+                disabled={true}
+                title="Coming soon"
+                onClick={(e) => {
+                  e.preventDefault();
                 }}
               >
                 Upgrade
@@ -300,14 +299,13 @@ const Navbar: React.FC = () => {
                   >
                     Manage Your Account
                   </Link>
-                  <Link
-                    href="/pricing"
-                    className="block px-4 py-2 text-[#f6f6f6] hover:bg-[#f6f6f6]/10 transition-colors"
-                    onClick={() => setUserMenuOpen(false)}
+                  <span
+                    className="block px-4 py-2 text-[#f6f6f6]/40 cursor-not-allowed"
                     style={{ fontSize: '14px' }}
+                    title="Coming soon"
                   >
                     Explore All Plans
-                  </Link>
+                  </span>
                 </div>
 
                 {/* Separator */}

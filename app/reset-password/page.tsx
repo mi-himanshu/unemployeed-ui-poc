@@ -4,6 +4,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import AuthNavbar from '@/components/navbar/AuthNavbar';
+import Navbar from '@/components/navbar/Navbar';
 import AuthFooter from '@/components/AuthFooter';
 import MainHeader from '@/components/main-header';
 import AnimatedBackground from '@/components/AnimatedBackground';
@@ -13,7 +14,7 @@ import { useAuth } from '@/contexts/AuthContext';
 function ResetPasswordContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const { signIn } = useAuth();
+    const { user, signIn } = useAuth();
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -90,7 +91,8 @@ function ResetPasswordContent() {
     return (
         <div className="min-h-screen flex flex-col bg-transparent relative">
             <AnimatedBackground gradientId="waveGradientResetPassword" />
-            <AuthNavbar currentPage="login" />
+            {/* Show Navbar if logged in, AuthNavbar if not */}
+            {user ? <Navbar /> : <AuthNavbar currentPage="login" />}
 
             <main className="flex-1 py-12 px-6">
                 <div className="max-w-7xl mt-12 mx-auto px-6 w-full">
@@ -227,7 +229,7 @@ export default function ResetPasswordPage() {
         <Suspense fallback={
             <div className="min-h-screen flex flex-col bg-transparent relative">
                 <AnimatedBackground gradientId="waveGradientResetPassword" />
-                <AuthNavbar currentPage="login" />
+                <Navbar />
                 <main className="flex-1 py-12 px-6 flex items-center justify-center">
                     <div className="text-[#f6f6f6]">Loading...</div>
                 </main>

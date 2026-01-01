@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Navbar from '@/components/navbar/Navbar';
 import Footer from '@/components/footer';
-import AnimatedBackground from '@/components/AnimatedBackground';
 import { useAuth } from '@/contexts/AuthContext';
 import { userApi } from '@/lib/api';
 
@@ -112,30 +111,69 @@ const AccountPage: React.FC = () => {
   }
 
   return (
-    <div className="bg-transparent min-h-screen flex flex-col relative">
-      <AnimatedBackground gradientId="waveGradientAccount" />
+    <div className="min-h-screen bg-[#0a0a0a] flex flex-col">
       <Navbar />
-      
-      {/* Banner Header */}
-      <div className="relative w-full py-16 px-6 overflow-hidden">
-        <div 
-          className="absolute inset-0"
-          style={{
-            background: 'linear-gradient(135deg, rgba(255, 100, 150, 0.4) 0%, rgba(100, 200, 255, 0.4) 100%)',
-          }}
-        />
-        <div className="relative max-w-7xl mx-auto">
-          <h1 className="text-4xl font-bold text-white mb-2">
-            Welcome To Your Account, {firstName}!
-          </h1>
-          <p className="text-lg text-white/90">
-            You can manage your account here. Change your plans, update general settings or view the privacy settings.
-          </p>
-        </div>
-      </div>
+      <main className="flex-1 flex flex-col">
+        {/* Header Section with Animated Background */}
+        <div className="relative py-20 px-6 overflow-hidden">
+          {/* Animated Background */}
+          <div className="absolute inset-0 overflow-hidden">
+            {/* Red wave-like shapes */}
+            <div className="absolute inset-0 opacity-20">
+              <div className="absolute top-0 left-0 w-full h-full">
+                <svg className="w-full h-full" viewBox="0 0 1200 400" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="waveGradientAccount" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#d32f2f" stopOpacity="0.3" />
+                      <stop offset="50%" stopColor="#d32f2f" stopOpacity="0.5" />
+                      <stop offset="100%" stopColor="#d32f2f" stopOpacity="0.3" />
+                    </linearGradient>
+                  </defs>
+                  <path
+                    d="M0,200 Q300,100 600,200 T1200,200 L1200,400 L0,400 Z"
+                    fill="url(#waveGradientAccount)"
+                    className="animate-pulse"
+                  />
+                  <path
+                    d="M0,250 Q400,150 800,250 T1600,250 L1600,400 L0,400 Z"
+                    fill="url(#waveGradientAccount)"
+                    className="animate-pulse"
+                    style={{ animationDelay: '1s' }}
+                  />
+                </svg>
+              </div>
+            </div>
+            
+            {/* Particle effects */}
+            <div className="absolute inset-0">
+              {[...Array(15)].map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute w-1 h-1 bg-white rounded-full opacity-30"
+                  style={{
+                    left: `${Math.random() * 100}%`,
+                    top: `${Math.random() * 100}%`,
+                    animation: `float ${3 + Math.random() * 2}s ease-in-out infinite`,
+                    animationDelay: `${Math.random() * 2}s`,
+                  }}
+                />
+              ))}
+            </div>
+          </div>
 
-      {/* Main Content */}
-      <main className="flex-1 py-8 px-6">
+          {/* Header Content */}
+          <div className="relative z-10 max-w-7xl mx-auto">
+            <h1 className="text-4xl font-bold text-white mb-2">
+              Welcome To Your Account, {firstName}!
+            </h1>
+            <p className="text-lg text-white/90">
+              You can manage your account here. Change your plans, update general settings or view the privacy settings.
+            </p>
+          </div>
+        </div>
+
+        {/* Body Section with dark background */}
+        <div className="flex-1 bg-[#1a1a1a] py-8 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
             {/* Left Sidebar */}
@@ -385,8 +423,8 @@ const AccountPage: React.FC = () => {
             </div>
           </div>
         </div>
+        </div>
       </main>
-
       <Footer />
     </div>
   );

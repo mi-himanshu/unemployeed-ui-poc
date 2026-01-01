@@ -31,13 +31,13 @@ const LandingNavbar: React.FC = () => {
           >
             Home
           </Link>
-          <Link 
-            href="/pricing" 
-            className="text-[#f6f6f6] hover:text-[#f6f6f6]/80 transition-colors"
+          <span 
+            className="text-[#f6f6f6]/40 cursor-not-allowed"
             style={{ fontSize: '16px', fontWeight: 400 }}
+            title="Coming soon"
           >
             Pricing
-          </Link>
+          </span>
           <Link 
             href="/contact" 
             className="text-[#f6f6f6] hover:text-[#f6f6f6]/80 transition-colors"
@@ -63,14 +63,13 @@ const LandingNavbar: React.FC = () => {
               Login
             </button>
           </Link>
-          <Link href="/diagnostics">
-            <button
-              className="px-6 py-2 rounded-md text-sm text-[#f6f6f6] bg-[#dc2626]/60 font-medium transition-all hover:opacity-90"
-              
-            >
-              Build Resume
-            </button>
-          </Link>
+          <button
+            disabled={true}
+            className="px-6 py-2 rounded-md text-sm text-[#f6f6f6]/40 bg-[#dc2626]/30 font-medium opacity-50 cursor-not-allowed"
+            title="Coming soon"
+          >
+            Build Resume
+          </button>
         </div>
       </div>
     </nav>

@@ -25,7 +25,10 @@ const DashboardPage: React.FC = () => {
   useEffect(() => {
     if (authLoading) return;
     
+    // Middleware handles redirect to login if not authenticated
+    // But we still check here for email verification
     if (!user) {
+      // If middleware didn't catch it (edge case), redirect to login
       router.push('/login');
       return;
     }

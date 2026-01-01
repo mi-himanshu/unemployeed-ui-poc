@@ -72,104 +72,171 @@ const DashboardBody: React.FC<DashboardBodyProps> = ({
             Services
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {services.map((service) => (
-              <Link
-                key={service.id}
-                href={service.primaryLink}
-                className="bg-[#2a3030]/50 p-6 rounded-lg border border-[#f6f6f6]/10 flex flex-col hover:border-[#f6f6f6]/20 transition-colors cursor-pointer"
-              >
-                {/* Row 1: Icon and Title/Subtitle */}
-                <div className="flex gap-4 mb-4">
-                  {/* Left Column - Icon */}
-                  <div className="flex-shrink-0">
-                    <div className="w-12 h-12 bg-[#f6f6f6]/10 rounded-sm flex items-center justify-center">
-                      {service.id === 'career-compass' && (
-                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <circle cx="16" cy="16" r="14" fill="#FF6B6B" opacity="0.2" />
-                          <circle cx="16" cy="16" r="12" stroke="#FF6B6B" strokeWidth="1.5" fill="none" />
-                          <path d="M16 4 L16 8 M16 24 L16 28 M4 16 L8 16 M24 16 L28 16" stroke="#FF6B6B" strokeWidth="2" strokeLinecap="round" />
-                          <path d="M12 12 L20 20 M20 12 L12 20" stroke="#4ECDC4" strokeWidth="1.5" strokeLinecap="round" />
-                          <circle cx="16" cy="16" r="2" fill="#FFE66D" />
-                          <path d="M16 10 L18 14 L16 16 L14 14 Z" fill="#FF6B6B" />
-                          <path d="M22 16 L18 18 L16 16 L18 14 Z" fill="#4ECDC4" />
-                          <path d="M16 22 L14 18 L16 16 L18 18 Z" fill="#FFE66D" />
-                          <path d="M10 16 L14 14 L16 16 L14 18 Z" fill="#95E1D3" />
-                        </svg>
-                      )}
-                      {service.id === 'resume-studio' && (
-                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <rect x="8" y="6" width="16" height="20" rx="2" fill="#A8E6CF" opacity="0.3" />
-                          <rect x="8" y="6" width="16" height="20" rx="2" stroke="#A8E6CF" strokeWidth="1.5" fill="none" />
-                          <line x1="12" y1="11" x2="20" y2="11" stroke="#FFD93D" strokeWidth="1.5" strokeLinecap="round" />
-                          <line x1="12" y1="14" x2="20" y2="14" stroke="#6BCB77" strokeWidth="1.5" strokeLinecap="round" />
-                          <line x1="12" y1="17" x2="18" y2="17" stroke="#4D96FF" strokeWidth="1.5" strokeLinecap="round" />
-                          <circle cx="14" cy="20" r="1.5" fill="#FF6B9D" />
-                          <path d="M12 22 L16 24 L20 22" stroke="#C44569" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                          <rect x="10" y="8" width="4" height="2" rx="0.5" fill="#FFD93D" />
-                        </svg>
-                      )}
-                      {service.id === 'growth-circle' && (
-                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <circle cx="16" cy="16" r="12" fill="#FFD93D" opacity="0.2" />
-                          <circle cx="16" cy="16" r="10" stroke="#FFD93D" strokeWidth="1.5" fill="none" />
-                          <circle cx="10" cy="12" r="3" fill="#6BCB77" />
-                          <circle cx="22" cy="12" r="3" fill="#4D96FF" />
-                          <circle cx="10" cy="20" r="3" fill="#FF6B9D" />
-                          <circle cx="22" cy="20" r="3" fill="#C44569" />
-                          <circle cx="16" cy="16" r="2.5" fill="#FFD93D" />
-                          <path d="M13 14 L16 16 L19 14" stroke="#6BCB77" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-                          <path d="M13 18 L16 16 L19 18" stroke="#4D96FF" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-                          <path d="M16 13.5 L16 18.5" stroke="#FFD93D" strokeWidth="1.5" strokeLinecap="round" />
-                        </svg>
-                      )}
+            {services.map((service) => {
+              const isDisabled = service.id === 'resume-studio' || service.id === 'growth-circle';
+              
+              if (isDisabled) {
+                return (
+                  <div
+                    key={service.id}
+                    className="bg-[#2a3030]/50 p-6 rounded-lg border border-[#f6f6f6]/10 flex flex-col opacity-50 cursor-not-allowed"
+                    title="Coming soon"
+                  >
+                    {/* Row 1: Icon and Title/Subtitle */}
+                    <div className="flex gap-4 mb-4">
+                      {/* Left Column - Icon */}
+                      <div className="flex-shrink-0">
+                        <div className="w-12 h-12 bg-[#f6f6f6]/10 rounded-sm flex items-center justify-center">
+                          {service.id === 'resume-studio' && (
+                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <rect x="8" y="6" width="16" height="20" rx="2" fill="#A8E6CF" opacity="0.3" />
+                              <rect x="8" y="6" width="16" height="20" rx="2" stroke="#A8E6CF" strokeWidth="1.5" fill="none" />
+                              <line x1="12" y1="11" x2="20" y2="11" stroke="#FFD93D" strokeWidth="1.5" strokeLinecap="round" />
+                              <line x1="12" y1="14" x2="20" y2="14" stroke="#6BCB77" strokeWidth="1.5" strokeLinecap="round" />
+                              <line x1="12" y1="17" x2="18" y2="17" stroke="#4D96FF" strokeWidth="1.5" strokeLinecap="round" />
+                              <circle cx="14" cy="20" r="1.5" fill="#FF6B9D" />
+                              <path d="M12 22 L16 24 L20 22" stroke="#C44569" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                              <rect x="10" y="8" width="4" height="2" rx="0.5" fill="#FFD93D" />
+                            </svg>
+                          )}
+                          {service.id === 'growth-circle' && (
+                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <circle cx="16" cy="16" r="12" fill="#FFD93D" opacity="0.2" />
+                              <circle cx="16" cy="16" r="10" stroke="#FFD93D" strokeWidth="1.5" fill="none" />
+                              <circle cx="10" cy="12" r="3" fill="#6BCB77" />
+                              <circle cx="22" cy="12" r="3" fill="#4D96FF" />
+                              <circle cx="10" cy="20" r="3" fill="#FF6B9D" />
+                              <circle cx="22" cy="20" r="3" fill="#C44569" />
+                              <circle cx="16" cy="16" r="2.5" fill="#FFD93D" />
+                              <path d="M13 14 L16 16 L19 14" stroke="#6BCB77" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+                              <path d="M13 18 L16 16 L19 18" stroke="#4D96FF" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+                              <path d="M16 13.5 L16 18.5" stroke="#FFD93D" strokeWidth="1.5" strokeLinecap="round" />
+                            </svg>
+                          )}
+                        </div>
+                      </div>
+                      {/* Right Column - Title and Subtitle */}
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3
+                            className="text-white"
+                            style={{ fontSize: '20px', fontWeight: 600 }}
+                          >
+                            {service.title}
+                          </h3>
+                          {service.hintText && (
+                            <span 
+                              className="px-2 py-0.5 rounded bg-[#d1a990]/20 text-[#d1a990] text-[10px] font-medium"
+                            >
+                              {service.hintText}
+                            </span>
+                          )}
+                        </div>
+                        <p
+                          className="text-[#f6f6f6]/80"
+                          style={{ fontSize: '14px', fontWeight: 400 }}
+                        >
+                          {service.subtitle}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Row 2: Description */}
+                    <div className="mb-5">
+                      <p
+                        className="text-[#f6f6f6]/60"
+                        style={{ fontSize: '14px', fontWeight: 400, lineHeight: '1.5' }}
+                      >
+                        {service.description}
+                      </p>
+                    </div>
+
+                    {/* Row 3: CTA Link */}
+                    <div className="mt-auto">
+                      <span 
+                        className="text-[#d1a990]/40 cursor-not-allowed"
+                        title="Coming soon"
+                      >
+                        {service.primaryLinkText}
+                      </span>
                     </div>
                   </div>
-                  {/* Right Column - Title and Subtitle */}
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3
-                        className="text-white"
-                        style={{ fontSize: '20px', fontWeight: 600 }}
-                      >
-                        {service.title}
-                      </h3>
-                      {service.hintText && (
-                        <span 
-                          className="px-2 py-0.5 rounded bg-[#d1a990]/20 text-[#d1a990] text-[10px] font-medium"
-                        >
-                          {service.hintText}
-                        </span>
-                      )}
+                );
+              }
+              
+              return (
+                <Link
+                  key={service.id}
+                  href={service.primaryLink}
+                  className="bg-[#2a3030]/50 p-6 rounded-lg border border-[#f6f6f6]/10 flex flex-col hover:border-[#f6f6f6]/20 transition-colors cursor-pointer"
+                >
+                  {/* Row 1: Icon and Title/Subtitle */}
+                  <div className="flex gap-4 mb-4">
+                    {/* Left Column - Icon */}
+                    <div className="flex-shrink-0">
+                      <div className="w-12 h-12 bg-[#f6f6f6]/10 rounded-sm flex items-center justify-center">
+                        {service.id === 'career-compass' && (
+                          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="16" cy="16" r="14" fill="#FF6B6B" opacity="0.2" />
+                            <circle cx="16" cy="16" r="12" stroke="#FF6B6B" strokeWidth="1.5" fill="none" />
+                            <path d="M16 4 L16 8 M16 24 L16 28 M4 16 L8 16 M24 16 L28 16" stroke="#FF6B6B" strokeWidth="2" strokeLinecap="round" />
+                            <path d="M12 12 L20 20 M20 12 L12 20" stroke="#4ECDC4" strokeWidth="1.5" strokeLinecap="round" />
+                            <circle cx="16" cy="16" r="2" fill="#FFE66D" />
+                            <path d="M16 10 L18 14 L16 16 L14 14 Z" fill="#FF6B6B" />
+                            <path d="M22 16 L18 18 L16 16 L18 14 Z" fill="#4ECDC4" />
+                            <path d="M16 22 L14 18 L16 16 L18 18 Z" fill="#FFE66D" />
+                            <path d="M10 16 L14 14 L16 16 L14 18 Z" fill="#95E1D3" />
+                          </svg>
+                        )}
+                      </div>
                     </div>
+                    {/* Right Column - Title and Subtitle */}
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3
+                          className="text-white"
+                          style={{ fontSize: '20px', fontWeight: 600 }}
+                        >
+                          {service.title}
+                        </h3>
+                        {service.hintText && (
+                          <span 
+                            className="px-2 py-0.5 rounded bg-[#d1a990]/20 text-[#d1a990] text-[10px] font-medium"
+                          >
+                            {service.hintText}
+                          </span>
+                        )}
+                      </div>
+                      <p
+                        className="text-[#f6f6f6]/80"
+                        style={{ fontSize: '14px', fontWeight: 400 }}
+                      >
+                        {service.subtitle}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Row 2: Description */}
+                  <div className="mb-5">
                     <p
-                      className="text-[#f6f6f6]/80"
-                      style={{ fontSize: '14px', fontWeight: 400 }}
+                      className="text-[#f6f6f6]/60"
+                      style={{ fontSize: '14px', fontWeight: 400, lineHeight: '1.5' }}
                     >
-                      {service.subtitle}
+                      {service.description}
                     </p>
                   </div>
-                </div>
 
-                {/* Row 2: Description */}
-                <div className="mb-5">
-                  <p
-                    className="text-[#f6f6f6]/60"
-                    style={{ fontSize: '14px', fontWeight: 400, lineHeight: '1.5' }}
-                  >
-                    {service.description}
-                  </p>
-                </div>
-
-              {/* Row 3: CTA Link */}
-              <div className="mt-auto">
-                <span 
-                  className="text-[#d1a990]"
-                >
-                  {service.primaryLinkText}
-                </span>
-              </div>
-              </Link>
-            ))}
+                  {/* Row 3: CTA Link */}
+                  <div className="mt-auto">
+                    <span 
+                      className="text-[#d1a990]"
+                    >
+                      {service.primaryLinkText}
+                    </span>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </section>
 
@@ -290,13 +357,23 @@ const DashboardBody: React.FC<DashboardBodyProps> = ({
                   {resource.description}
                 </p>
                 <div className="mt-auto">
-                  <Link
-                    href={resource.link}
-                    className="text-[#d1a990] hover:text-[#d1a990]/80 transition-colors"
-                    style={{ fontSize: '14px', fontWeight: 500 }}
-                  >
-                    {resource.linkText}
-                  </Link>
+                  {(resource.id === 'guides-articles' || resource.id === 'templates-checklists' || resource.id === 'external-learning') ? (
+                    <span
+                      className="text-[#d1a990]/40 cursor-not-allowed"
+                      style={{ fontSize: '14px', fontWeight: 500 }}
+                      title="Coming soon"
+                    >
+                      {resource.linkText}
+                    </span>
+                  ) : (
+                    <Link
+                      href={resource.link}
+                      className="text-[#d1a990] hover:text-[#d1a990]/80 transition-colors"
+                      style={{ fontSize: '14px', fontWeight: 500 }}
+                    >
+                      {resource.linkText}
+                    </Link>
+                  )}
                 </div>
               </div>
             ))}

@@ -6,12 +6,20 @@
 const GATEWAY_URL = process.env.NEXT_PUBLIC_GATEWAY_URL || 'http://localhost:8000';
 
 /**
- * Get authentication token from localStorage (set by AuthContext)
+ * Get authentication token from cookies or localStorage (set by AuthContext)
  */
 async function getAuthToken(): Promise<string | null> {
   if (typeof window === 'undefined') return null;
   
-  // Token is stored by AuthContext after login/signup
+  // Try cookie first (for persistence), then localStorage as fallback
+  const cookieToken = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('auth_token='))
+    ?.split('=')[1];
+  
+  if (cookieToken) return cookieToken;
+  
+  // Fallback to localStorage
   return localStorage.getItem('auth_token');
 }
 
@@ -74,12 +82,19 @@ export interface Question {
   question_text: string;
   category: string;
   order: number;
+  why_we_ask?: string;
+  how_to_answer?: string;
+  is_followup?: boolean;
 }
 
 export interface StartDiagnosticResponse {
   session_id: string;
   status: string;
   questions: Question[];
+  followup_questions?: Question[];
+  existing_responses?: Record<string, string>;
+  is_complete?: boolean;
+  ready_to_complete?: boolean;
 }
 
 export interface SubmitResponseRequest {
@@ -404,6 +419,27 @@ export const authApi = {
     if (!response.ok) {
       const error = await response.json().catch(() => ({ detail: response.statusText }));
       throw new Error(error.detail || 'Failed to reset password');
+    }
+
+    return response.json();
+  },
+
+  /**
+   * Refresh access token using refresh token
+   */
+  async refreshToken(refreshToken: string): Promise<{ user: any; session: any }> {
+    const GATEWAY_URL = process.env.NEXT_PUBLIC_GATEWAY_URL || 'http://localhost:8000';
+    const response = await fetch(`${GATEWAY_URL}/api/v1/auth/refresh`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ refresh_token: refreshToken }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ detail: response.statusText }));
+      throw new Error(error.detail || 'Failed to refresh token');
     }
 
     return response.json();

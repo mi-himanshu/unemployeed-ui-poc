@@ -35,13 +35,13 @@ const AuthNavbar: React.FC<AuthNavbarProps> = ({ currentPage }) => {
           >
             Home
           </Link>
-          <Link 
-            href="/pricing" 
-            className="text-[#f6f6f6] hover:text-[#f6f6f6]/80 transition-colors"
+          <span 
+            className="text-[#f6f6f6]/40 cursor-not-allowed"
             style={{ fontSize: '16px', fontWeight: 400 }}
+            title="Coming soon"
           >
             Pricing
-          </Link>
+          </span>
           <Link 
             href="/contact" 
             className="text-[#f6f6f6] hover:text-[#f6f6f6]/80 transition-colors"

@@ -5,27 +5,18 @@ import Link from 'next/link';
 import Navbar from '@/components/navbar/Navbar';
 import LandingNavbar from '@/components/navbar/LandingNavbar';
 import Footer from '@/components/footer';
+import { getAccessToken } from '@/lib/auth-storage';
 
 const ErrorPage: React.FC = () => {
-  // Use a safe auth check that won't trigger API calls
-  // This prevents infinite redirect loops
-  const [user, setUser] = React.useState<any>(null);
-  
-  React.useEffect(() => {
-    // Only check localStorage, don't make API calls
-    if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('auth_token');
-      if (token) {
-        // User is likely logged in, but we won't verify via API to avoid loops
-        setUser({ id: 'user' }); // Minimal user object just for navbar
-      }
-    }
-  }, []);
+  // Check auth token synchronously on first render to avoid flash
+  // This runs immediately, not in useEffect, so there's no delay
+  const token = typeof window !== 'undefined' ? getAccessToken() : null;
+  const isAuthenticated = !!token;
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex flex-col">
       {/* Conditional Navbar - Show Navbar if logged in, LandingNavbar if not */}
-      {user ? <Navbar /> : <LandingNavbar />}
+      {isAuthenticated ? <Navbar /> : <LandingNavbar />}
 
       {/* Main Content - 500 Error Section */}
       <main className="flex-1 flex flex-col">

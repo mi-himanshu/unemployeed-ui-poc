@@ -2,6 +2,14 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { userApi, UserProfile, authApi } from '@/lib/api';
+import { 
+  storeAuthTokens, 
+  getAccessToken, 
+  getRefreshToken, 
+  getTokenExpiresAt,
+  isTokenExpired,
+  clearAuthTokens 
+} from '@/lib/auth-storage';
 
 // API Gateway URL
 const GATEWAY_URL = process.env.NEXT_PUBLIC_GATEWAY_URL || 'http://localhost:8000';
@@ -36,7 +44,7 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   emailVerified: boolean | null;
-  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
+  signIn: (email: string, password: string) => Promise<{ error: AuthError | null; emailVerified?: boolean }>;
   signUp: (email: string, password: string) => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
   signInWithOAuth: (provider: 'google' | 'apple') => Promise<void>;
@@ -53,28 +61,57 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [emailVerified, setEmailVerified] = useState<boolean | null>(null);
 
-  // Store token in localStorage
+  // Store token in cookies and localStorage
   const storeSession = (sessionData: Session, userData: User) => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('auth_token', sessionData.access_token);
-      if (sessionData.refresh_token) {
-        localStorage.setItem('refresh_token', sessionData.refresh_token);
-      }
-    }
+    // Calculate expiration timestamp (default to 1 hour if not provided)
+    const expiresAt = sessionData.expires_at 
+      ? sessionData.expires_at * 1000 // Convert to milliseconds
+      : Date.now() + (sessionData.expires_in || 3600) * 1000;
+    
+    // Store in both cookies (for persistence) and localStorage (as fallback)
+    storeAuthTokens(
+      sessionData.access_token,
+      sessionData.refresh_token,
+      expiresAt
+    );
+    
     setSession(sessionData);
     setUser(userData);
   };
 
-  // Clear session from localStorage
+  // Clear session from cookies and localStorage
   const clearSession = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('refresh_token');
-    }
+    clearAuthTokens();
     setSession(null);
     setUser(null);
     setProfile(null);
     setEmailVerified(null);
+  };
+
+  // Refresh access token if expired
+  const refreshAccessToken = async (): Promise<boolean> => {
+    try {
+      const refreshToken = getRefreshToken();
+      if (!refreshToken) {
+        console.debug('[AuthContext] No refresh token available');
+        return false;
+      }
+
+      console.debug('[AuthContext] Refreshing access token...');
+      const result = await authApi.refreshToken(refreshToken);
+      
+      if (result.session && result.user) {
+        storeSession(result.session, result.user);
+        setEmailVerified(result.user?.email_verified || false);
+        console.debug('[AuthContext] Token refreshed successfully');
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('[AuthContext] Error refreshing token:', error);
+      return false;
+    }
   };
 
   const refreshProfile = async () => {
@@ -93,7 +130,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const checkEmailVerification = async (): Promise<boolean> => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+    const token = getAccessToken();
     if (!token) {
       setEmailVerified(false);
       return false;
@@ -120,11 +157,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const refreshToken = urlParams.get('refresh_token');
         
         if (oauthToken) {
-          // Store tokens and remove from URL
-          localStorage.setItem('auth_token', oauthToken);
-          if (refreshToken) {
-            localStorage.setItem('refresh_token', refreshToken);
-          }
+          // Store tokens in cookies and localStorage, remove from URL
+          const expiresAt = Date.now() + (3600 * 1000); // Default 1 hour
+          storeAuthTokens(oauthToken, refreshToken || undefined, expiresAt);
           window.history.replaceState({}, '', window.location.pathname);
           
           // Get session data
@@ -157,8 +192,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
-      // Check for existing token in localStorage
-      const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+      // Check for existing token in cookies or localStorage
+      let token = getAccessToken();
+      
+      // If token is expired or will expire soon, try to refresh it
+      if (token && isTokenExpired()) {
+        console.debug('[AuthContext] Token expired, attempting refresh...');
+        const refreshed = await refreshAccessToken();
+        if (refreshed) {
+          token = getAccessToken(); // Get the new token
+        } else {
+          // Refresh failed, clear session
+          clearSession();
+          setLoading(false);
+          return;
+        }
+      }
       
       if (!token) {
         setLoading(false);
@@ -175,8 +224,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (response.ok) {
           const data = await response.json();
           setUser(data.user);
-          // Get refresh token from localStorage if available
-          const refreshToken = typeof window !== 'undefined' ? localStorage.getItem('refresh_token') : null;
+          // Get refresh token from storage
+          const refreshToken = getRefreshToken();
           setSession({ 
             access_token: token,
             refresh_token: refreshToken || undefined
@@ -184,6 +233,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setEmailVerified(data.user?.email_verified || false);
           await refreshProfile();
           await checkEmailVerification();
+        } else if (response.status === 401) {
+          // Token invalid, try to refresh
+          console.debug('[AuthContext] Session check returned 401, attempting token refresh...');
+          const refreshed = await refreshAccessToken();
+          if (refreshed) {
+            // Retry session check with new token
+            const newToken = getAccessToken();
+            if (newToken) {
+              const retryResponse = await fetch(`${GATEWAY_URL}/api/v1/auth/session`, {
+                headers: {
+                  'Authorization': `Bearer ${newToken}`,
+                },
+              });
+              if (retryResponse.ok) {
+                const retryData = await retryResponse.json();
+                setUser(retryData.user);
+                const refreshToken = getRefreshToken();
+                setSession({ 
+                  access_token: newToken,
+                  refresh_token: refreshToken || undefined
+                });
+                setEmailVerified(retryData.user?.email_verified || false);
+                await refreshProfile();
+                await checkEmailVerification();
+              } else {
+                clearSession();
+              }
+            } else {
+              clearSession();
+            }
+          } else {
+            clearSession();
+          }
         } else {
           clearSession();
         }
@@ -221,13 +303,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return { error: { message: data.detail || 'Failed to sign in' } };
       }
 
+      // Store session and user data
       storeSession(data.session, data.user);
-      setEmailVerified(data.user?.email_verified || false);
+      const emailVerified = data.user?.email_verified || false;
+      setEmailVerified(emailVerified);
       
-      // Check verification status
+      // Check verification status (updates emailVerified if needed)
       await checkEmailVerification();
       
-      return { error: null };
+      // Return email verification status so login page can handle it
+      return { 
+        error: null,
+        emailVerified: emailVerified
+      };
     } catch (error: any) {
       return { error: { message: error.message || 'An unexpected error occurred' } };
     }

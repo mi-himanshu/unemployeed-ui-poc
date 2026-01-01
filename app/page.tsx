@@ -1,11 +1,17 @@
 'use client';
 
 import React from 'react';
+import Navbar from '@/components/navbar/Navbar';
 import LandingNavbar from '@/components/navbar/LandingNavbar';
 import LandingHero from '@/components/landing-hero';
 import LandingFooter from '@/components/landing-footer';
+import { getAccessToken } from '@/lib/auth-storage';
 
 export default function Home() {
+  // Check auth token synchronously on first render to avoid flash
+  // This runs immediately, not in useEffect, so there's no delay
+  const token = typeof window !== 'undefined' ? getAccessToken() : null;
+  const isAuthenticated = !!token;
   const landingServices = [
     {
       id: 'resume-builder',
@@ -92,7 +98,8 @@ export default function Home() {
         </div>
       </div>
 
-      <LandingNavbar />
+      {/* Conditional Navbar - Show Navbar if logged in, LandingNavbar if not */}
+      {isAuthenticated ? <Navbar /> : <LandingNavbar />}
       
       <main className="flex-1 flex flex-col overflow-hidden relative z-10">
         {/* Upper Row - Hero Section */}

@@ -19,27 +19,27 @@ const Footer: React.FC = () => (
             </h4>
             <ul className="space-y-1">
               <li>
-                <a href="#" className="text-[#f6f6f6]/80 hover:text-[#f6f6f6] transition-colors" style={{ fontSize: '12px', fontWeight: 400 }}>
+                <span className="text-[#f6f6f6]/40 cursor-not-allowed" style={{ fontSize: '12px', fontWeight: 400 }} title="Coming soon">
                   Resume Builder
-                </a>
+                </span>
               </li>
               <li>
-                <a href="#" className="text-[#f6f6f6]/80 hover:text-[#f6f6f6] transition-colors" style={{ fontSize: '12px', fontWeight: 400 }}>
+                <a href="/diagnostics" className="text-[#f6f6f6]/80 hover:text-[#f6f6f6] transition-colors" style={{ fontSize: '12px', fontWeight: 400 }}>
                   Career Diagnostics
                 </a>
               </li>
               <li>
-                <a href="#" className="text-[#f6f6f6]/80 hover:text-[#f6f6f6] transition-colors" style={{ fontSize: '12px', fontWeight: 400 }}>
+                <span className="text-[#f6f6f6]/40 cursor-not-allowed" style={{ fontSize: '12px', fontWeight: 400 }} title="Coming soon">
                   Learning Resources
-                </a>
+                </span>
               </li>
               <li>
-                <a href="#" className="text-[#f6f6f6]/80 hover:text-[#f6f6f6] transition-colors" style={{ fontSize: '12px', fontWeight: 400 }}>
+                <span className="text-[#f6f6f6]/40 cursor-not-allowed" style={{ fontSize: '12px', fontWeight: 400 }} title="Coming soon">
                   Community
-                </a>
+                </span>
               </li>
               <li>
-                <a href="#" className="text-[#f6f6f6]/80 hover:text-[#f6f6f6] transition-colors" style={{ fontSize: '12px', fontWeight: 400 }}>
+                <a href="/profile" className="text-[#f6f6f6]/80 hover:text-[#f6f6f6] transition-colors" style={{ fontSize: '12px', fontWeight: 400 }}>
                   Profile
                 </a>
               </li>
@@ -56,19 +56,19 @@ const Footer: React.FC = () => (
             </h4>
             <ul className="space-y-1">
               <li>
-                <a href="#" className="text-[#f6f6f6]/80 hover:text-[#f6f6f6] transition-colors" style={{ fontSize: '12px', fontWeight: 400 }}>
+                <span className="text-[#f6f6f6]/40 cursor-not-allowed" style={{ fontSize: '12px', fontWeight: 400 }} title="Coming soon">
                   Troubleshooting
-                </a>
+                </span>
               </li>
               <li>
-                <a href="#" className="text-[#f6f6f6]/80 hover:text-[#f6f6f6] transition-colors" style={{ fontSize: '12px', fontWeight: 400 }}>
+                <a href="/contact" className="text-[#f6f6f6]/80 hover:text-[#f6f6f6] transition-colors" style={{ fontSize: '12px', fontWeight: 400 }}>
                   Contact
                 </a>
               </li>
               <li>
-                <a href="#" className="text-[#f6f6f6]/80 hover:text-[#f6f6f6] transition-colors" style={{ fontSize: '12px', fontWeight: 400 }}>
+                <span className="text-[#f6f6f6]/40 cursor-not-allowed" style={{ fontSize: '12px', fontWeight: 400 }} title="Coming soon">
                   FAQs
-                </a>
+                </span>
               </li>
             </ul>
           </div>
@@ -83,14 +83,14 @@ const Footer: React.FC = () => (
             </h4>
             <ul className="space-y-1">
               <li>
-                <a href="#" className="text-[#f6f6f6]/80 hover:text-[#f6f6f6] transition-colors" style={{ fontSize: '12px', fontWeight: 400 }}>
+                <a href="/about" className="text-[#f6f6f6]/80 hover:text-[#f6f6f6] transition-colors" style={{ fontSize: '12px', fontWeight: 400 }}>
                   About
                 </a>
               </li>
               <li>
-                <a href="#" className="text-[#f6f6f6]/80 hover:text-[#f6f6f6] transition-colors" style={{ fontSize: '12px', fontWeight: 400 }}>
+                <span className="text-[#f6f6f6]/40 cursor-not-allowed" style={{ fontSize: '12px', fontWeight: 400 }} title="Coming soon">
                   What's New?
-                </a>
+                </span>
               </li>
             </ul>
           </div>
@@ -105,9 +105,9 @@ const Footer: React.FC = () => (
             </h4>
             <ul className="space-y-1">
               <li>
-                <a href="#" className="text-[#f6f6f6]/80 hover:text-[#f6f6f6] transition-colors" style={{ fontSize: '12px', fontWeight: 400 }}>
+                <span className="text-[#f6f6f6]/40 cursor-not-allowed" style={{ fontSize: '12px', fontWeight: 400 }} title="Coming soon">
                   Pricing & Plans
-                </a>
+                </span>
               </li>
             </ul>
           </div>
@@ -122,7 +122,7 @@ const Footer: React.FC = () => (
             Comprehensive career preparation tools and resources to help you land your dream job
           </p>
           <div className="mb-6">
-            <Button variant="primary" className="text-sm">
+            <Button variant="primary" className="text-sm opacity-50 cursor-not-allowed" disabled={true} title="Coming soon">
               Join Community
             </Button>
           </div>
@@ -150,70 +150,70 @@ const Footer: React.FC = () => (
 
         {/* Center - Terms Links */}
         <div className="flex gap-4">
-          <a 
-            href="#" 
-            className="text-[#f6f6f6]/80 hover:text-[#f6f6f6] transition-colors"
+          <span 
+            className="text-[#f6f6f6]/40 cursor-not-allowed"
             style={{ fontSize: '12px', fontWeight: 400 }}
+            title="Coming soon"
           >
             Terms of service
-          </a>
-          <a 
-            href="#" 
-            className="text-[#f6f6f6]/80 hover:text-[#f6f6f6] transition-colors"
+          </span>
+          <span 
+            className="text-[#f6f6f6]/40 cursor-not-allowed"
             style={{ fontSize: '12px', fontWeight: 400 }}
+            title="Coming soon"
           >
             Privacy Policy
-          </a>
+          </span>
         </div>
 
         {/* Right - Social Media Icons */}
         <div className="flex gap-3">
           {/* Instagram */}
-          <a 
-            href="#" 
-            className="w-8 h-8 rounded-full bg-[#f6f6f6]/10 border border-[#f6f6f6]/20 flex items-center justify-center hover:bg-[#f6f6f6]/20 transition-colors"
+          <span 
+            className="w-8 h-8 rounded-full bg-[#f6f6f6]/10 border border-[#f6f6f6]/20 flex items-center justify-center opacity-50 cursor-not-allowed"
             aria-label="Instagram"
+            title="Coming soon"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[#f6f6f6]">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[#f6f6f6]/40">
               <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
               <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
               <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
             </svg>
-          </a>
+          </span>
 
           {/* Facebook */}
-          <a 
-            href="#" 
-            className="w-8 h-8 rounded-full bg-[#f6f6f6]/10 border border-[#f6f6f6]/20 flex items-center justify-center hover:bg-[#f6f6f6]/20 transition-colors"
+          <span 
+            className="w-8 h-8 rounded-full bg-[#f6f6f6]/10 border border-[#f6f6f6]/20 flex items-center justify-center opacity-50 cursor-not-allowed"
             aria-label="Facebook"
+            title="Coming soon"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[#f6f6f6]">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[#f6f6f6]/40">
               <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
             </svg>
-          </a>
+          </span>
 
           {/* Twitter */}
-          <a 
-            href="#" 
-            className="w-8 h-8 rounded-full bg-[#f6f6f6]/10 border border-[#f6f6f6]/20 flex items-center justify-center hover:bg-[#f6f6f6]/20 transition-colors"
+          <span 
+            className="w-8 h-8 rounded-full bg-[#f6f6f6]/10 border border-[#f6f6f6]/20 flex items-center justify-center opacity-50 cursor-not-allowed"
             aria-label="Twitter"
+            title="Coming soon"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[#f6f6f6]">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[#f6f6f6]/40">
               <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
             </svg>
-          </a>
+          </span>
 
           {/* YouTube */}
-          <a 
-            href="#" 
-            className="w-8 h-8 rounded-full bg-[#f6f6f6]/10 border border-[#f6f6f6]/20 flex items-center justify-center hover:bg-[#f6f6f6]/20 transition-colors"
+          <span 
+            className="w-8 h-8 rounded-full bg-[#f6f6f6]/10 border border-[#f6f6f6]/20 flex items-center justify-center opacity-50 cursor-not-allowed"
             aria-label="YouTube"
+            title="Coming soon"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[#f6f6f6]">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[#f6f6f6]/40">
               <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/>
               <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/>
             </svg>
-          </a>
+          </span>
         </div>
       </div>
     </div>
