@@ -52,10 +52,15 @@ export function getErrorMessage(error: any, context: 'login' | 'signup' | 'oauth
       };
     }
 
-    if (lowerMessage.includes('user not found') || lowerMessage.includes('does not exist')) {
+    if (
+      lowerMessage.includes('user not found') || 
+      lowerMessage.includes('does not exist') ||
+      lowerMessage.includes('no user found') ||
+      lowerMessage.includes('email not found')
+    ) {
       return {
-        userMessage: 'Account not found',
-        actionMessage: 'No account exists with this email. Please sign up to create a new account.',
+        userMessage: 'Welcome! We don\'t have an account with this email yet.',
+        actionMessage: 'Join us to start your career journey! Sign up to create your account and unlock personalized roadmaps, resume tools, and a supportive community.',
       };
     }
 
@@ -108,7 +113,7 @@ export function getErrorMessage(error: any, context: 'login' | 'signup' | 'oauth
 
   // OAuth errors
   if (context === 'oauth') {
-    if (lowerMessage.includes('cancelled') || lowerMessage.includes('denied')) {
+    if (lowerMessage.includes('cancelled') || lowerMessage.includes('denied') || lowerMessage.includes('access_denied')) {
       return {
         userMessage: 'Sign in was cancelled',
         actionMessage: 'You can try again or use email and password to sign in.',
@@ -119,6 +124,27 @@ export function getErrorMessage(error: any, context: 'login' | 'signup' | 'oauth
       return {
         userMessage: 'Popup was blocked',
         actionMessage: 'Please allow popups for this site and try again.',
+      };
+    }
+
+    if (lowerMessage.includes('no_code') || lowerMessage.includes('missing code') || lowerMessage.includes('authorization code')) {
+      return {
+        userMessage: 'OAuth authentication incomplete',
+        actionMessage: 'Please try signing in again. If the problem persists, try using email and password.',
+      };
+    }
+
+    if (lowerMessage.includes('oauth_failed') || lowerMessage.includes('failed to exchange') || lowerMessage.includes('exchange code')) {
+      return {
+        userMessage: 'Unable to complete sign in',
+        actionMessage: 'Something went wrong during authentication. Please try again or use email and password to sign in.',
+      };
+    }
+
+    if (lowerMessage.includes('invalid provider') || lowerMessage.includes('unsupported provider')) {
+      return {
+        userMessage: 'Sign in method not available',
+        actionMessage: 'This sign in method is currently unavailable. Please try another method or use email and password.',
       };
     }
   }

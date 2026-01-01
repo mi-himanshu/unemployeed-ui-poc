@@ -6,6 +6,7 @@ import Link from 'next/link';
 import AuthNavbar from '@/components/navbar/AuthNavbar';
 import AuthFooter from '@/components/AuthFooter';
 import MainHeader from '@/components/main-header';
+import AnimatedBackground from '@/components/AnimatedBackground';
 import { useAuth } from '@/contexts/AuthContext';
 import { authApi } from '@/lib/api';
 
@@ -181,7 +182,8 @@ function VerifyEmailPageContent() {
 
     if (verified) {
         return (
-            <div className="min-h-screen flex flex-col bg-transparent">
+            <div className="min-h-screen flex flex-col bg-transparent relative">
+                <AnimatedBackground gradientId="waveGradientVerifyEmail" />
                 <AuthNavbar currentPage="verify" />
                 <main className="flex-1 py-12 px-6 flex items-center justify-center">
                     <div className="max-w-md w-full text-center">
@@ -200,7 +202,8 @@ function VerifyEmailPageContent() {
     }
 
     return (
-        <div className="min-h-screen flex flex-col bg-transparent">
+        <div className="min-h-screen flex flex-col bg-transparent relative">
+            <AnimatedBackground gradientId="waveGradientVerifyEmail" />
             <AuthNavbar currentPage="verify" />
             <main className="flex-1 py-12 px-6">
                 <div className="max-w-7xl mt-12 mx-auto px-6 w-full">
@@ -299,7 +302,8 @@ function VerifyEmailPageContent() {
 export default function VerifyEmailPage() {
     return (
         <Suspense fallback={
-            <div className="min-h-screen flex flex-col bg-transparent">
+            <div className="min-h-screen flex flex-col bg-transparent relative">
+                <AnimatedBackground gradientId="waveGradientVerifyEmail" />
                 <AuthNavbar currentPage="verify" />
                 <main className="flex-1 py-12 px-6 flex items-center justify-center">
                     <div className="text-[#f6f6f6]">Loading...</div>

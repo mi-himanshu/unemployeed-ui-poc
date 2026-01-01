@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Navbar from '@/components/navbar/Navbar';
 import Footer from '@/components/footer';
+import AnimatedBackground from '@/components/AnimatedBackground';
 import { useAuth } from '@/contexts/AuthContext';
 import { userApi } from '@/lib/api';
 
@@ -111,7 +112,8 @@ const AccountPage: React.FC = () => {
   }
 
   return (
-    <div className="bg-transparent min-h-screen flex flex-col">
+    <div className="bg-transparent min-h-screen flex flex-col relative">
+      <AnimatedBackground gradientId="waveGradientAccount" />
       <Navbar />
       
       {/* Banner Header */}

@@ -65,10 +65,10 @@ const LandingNavbar: React.FC = () => {
           </Link>
           <Link href="/diagnostics">
             <button
-              className="px-6 py-2 rounded-md text-sm text-[#f6f6f6] font-medium transition-all hover:opacity-90"
-              style={{ backgroundColor: '#dc2626' }}
+              className="px-6 py-2 rounded-md text-sm text-[#f6f6f6] bg-[#dc2626]/60 font-medium transition-all hover:opacity-90"
+              
             >
-              Start Diagnostic
+              Build Resume
             </button>
           </Link>
         </div>

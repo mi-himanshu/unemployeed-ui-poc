@@ -6,6 +6,7 @@ import Navbar from '@/components/navbar/Navbar';
 import Footer from '@/components/footer';
 import MainHeader from '@/components/main-header';
 import MainBody from '@/components/main-body';
+import AnimatedBackground from '@/components/AnimatedBackground';
 import { roadmapApi } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { Phase, Milestone } from '@/types/milestone';
@@ -146,7 +147,8 @@ const RoadmapPageContent: React.FC = () => {
   }
 
   return (
-    <div className="bg-[#1a1a1a]/40">
+    <div className="bg-[#1a1a1a]/40 relative">
+      <AnimatedBackground gradientId="waveGradientRoadmap" />
       <Navbar />
       <MainHeader
         title="Your Learning Split Into Phases"

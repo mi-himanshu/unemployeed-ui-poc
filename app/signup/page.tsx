@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import AuthNavbar from '@/components/navbar/AuthNavbar';
 import AuthFooter from '@/components/AuthFooter';
 import MainHeader from '@/components/main-header';
+import AnimatedBackground from '@/components/AnimatedBackground';
 import { useAuth } from '@/contexts/AuthContext';
 import { getErrorMessage } from '@/lib/error-messages';
 
@@ -117,7 +118,8 @@ export default function SignupPage() {
     };
 
     return (
-        <div className="min-h-screen flex flex-col bg-transparent">
+        <div className="min-h-screen flex flex-col bg-transparent relative">
+            <AnimatedBackground gradientId="waveGradientSignup" />
             <AuthNavbar currentPage="signup" />
 
             <main className="flex-1 py-12 px-6">

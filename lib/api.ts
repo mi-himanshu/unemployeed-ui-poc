@@ -17,6 +17,7 @@ async function getAuthToken(): Promise<string | null> {
 
 /**
  * Make authenticated API request through gateway
+ * All errors are logged - components should handle redirects to error page
  */
 async function apiRequest<T>(
   endpoint: string,
@@ -25,7 +26,11 @@ async function apiRequest<T>(
   const token = await getAuthToken();
   
   if (!token) {
-    throw new Error('Authentication required. Please log in.');
+    // Authentication errors should redirect to login, not error page
+    if (typeof window !== 'undefined') {
+      window.location.href = '/login';
+    }
+    throw new Error('Authentication required');
   }
   
   const headers: Record<string, string> = {
@@ -40,8 +45,23 @@ async function apiRequest<T>(
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ detail: response.statusText }));
-    throw new Error(error.detail || `API request failed: ${response.statusText}`);
+    // Log error details for debugging - NEVER show to users
+    const errorData = await response.json().catch(() => ({ detail: response.statusText }));
+    const errorMessage = errorData.detail || errorData.message || `API request failed: ${response.statusText}`;
+    
+    console.error('[API Error]', {
+      endpoint,
+      status: response.status,
+      statusText: response.statusText,
+      error: errorData,
+      timestamp: new Date().toISOString(),
+    });
+    
+    // Throw error - let components handle redirect (prevents infinite loops)
+    const error = new Error('API request failed');
+    (error as any).status = response.status;
+    (error as any).data = errorData;
+    throw error;
   }
 
   return response.json();
@@ -417,16 +437,25 @@ export interface ContactResponse {
 export const contactApi = {
   /**
    * Submit contact form
+   * Optionally includes auth token if user is logged in
    */
   async submitContact(data: ContactRequest): Promise<ContactResponse> {
     const GATEWAY_URL = process.env.NEXT_PUBLIC_GATEWAY_URL || 'http://localhost:8000';
     
-    // Contact form can be submitted without authentication
+    // Get auth token if available (optional for contact form)
+    const token = await getAuthToken();
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    
+    // Add auth header if token is available
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
     const response = await fetch(`${GATEWAY_URL}/api/v1/contact`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify(data),
     });
 

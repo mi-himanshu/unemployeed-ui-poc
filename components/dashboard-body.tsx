@@ -28,36 +28,38 @@ const DashboardBody: React.FC<DashboardBodyProps> = ({
           >
             Your Progress
           </h2>
-          <div className="space-y-1">
-            {progressItems.map((item, index) => (
-              <div key={item.id}>
-                <div className="flex justify-between items-center py-2">
-                  <div className="flex-1">
-                    <h3
-                      className="text-white mb-1"
-                      style={{ fontSize: '18px', fontWeight: 500 }}
+          <div className="bg-[#2a3030] p-6 rounded-lg border border-[#f6f6f6]/10">
+            <div className="space-y-1">
+              {progressItems.map((item, index) => (
+                <div key={item.id}>
+                  <div className="flex justify-between items-center py-2">
+                    <div className="flex-1">
+                      <h3
+                        className="text-white mb-1"
+                        style={{ fontSize: '18px', fontWeight: 500 }}
+                      >
+                        {item.title}
+                      </h3>
+                      <p
+                        className="text-[#f6f6f6]/60"
+                        style={{ fontSize: '14px', fontWeight: 400 }}
+                      >
+                        {item.status}
+                      </p>
+                    </div>
+                    <div
+                      className="text-white"
+                      style={{ fontSize: '18px', fontWeight: 600 }}
                     >
-                      {item.title}
-                    </h3>
-                    <p
-                      className="text-[#f6f6f6]/60"
-                      style={{ fontSize: '14px', fontWeight: 400 }}
-                    >
-                      {item.status}
-                    </p>
+                      {item.value}
+                    </div>
                   </div>
-                  <div
-                    className="text-white"
-                    style={{ fontSize: '18px', fontWeight: 600 }}
-                  >
-                    {item.value}
-                  </div>
+                  {index < progressItems.length - 1 && (
+                    <div className="border-t border-[#f6f6f6]/20" />
+                  )}
                 </div>
-                {index < progressItems.length - 1 && (
-                  <div className="border-t border-[#f6f6f6]/20" />
-                )}
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
 

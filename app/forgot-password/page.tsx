@@ -6,6 +6,7 @@ import Link from 'next/link';
 import AuthNavbar from '@/components/navbar/AuthNavbar';
 import AuthFooter from '@/components/AuthFooter';
 import MainHeader from '@/components/main-header';
+import AnimatedBackground from '@/components/AnimatedBackground';
 import { authApi } from '@/lib/api';
 
 export default function ForgotPasswordPage() {
@@ -50,7 +51,8 @@ export default function ForgotPasswordPage() {
     };
 
     return (
-        <div className="min-h-screen flex flex-col bg-transparent">
+        <div className="min-h-screen flex flex-col bg-transparent relative">
+            <AnimatedBackground gradientId="waveGradientForgotPassword" />
             <AuthNavbar currentPage="login" />
 
             <main className="flex-1 py-12 px-6">

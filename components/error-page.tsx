@@ -5,10 +5,22 @@ import Link from 'next/link';
 import Navbar from '@/components/navbar/Navbar';
 import LandingNavbar from '@/components/navbar/LandingNavbar';
 import Footer from '@/components/footer';
-import { useAuth } from '@/contexts/AuthContext';
 
 const ErrorPage: React.FC = () => {
-  const { user } = useAuth();
+  // Use a safe auth check that won't trigger API calls
+  // This prevents infinite redirect loops
+  const [user, setUser] = React.useState<any>(null);
+  
+  React.useEffect(() => {
+    // Only check localStorage, don't make API calls
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('auth_token');
+      if (token) {
+        // User is likely logged in, but we won't verify via API to avoid loops
+        setUser({ id: 'user' }); // Minimal user object just for navbar
+      }
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex flex-col">

@@ -1,21 +1,49 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import AuthNavbar from '@/components/navbar/AuthNavbar';
 import AuthFooter from '@/components/AuthFooter';
 import MainHeader from '@/components/main-header';
+import AnimatedBackground from '@/components/AnimatedBackground';
 import { useAuth } from '@/contexts/AuthContext';
 import { getErrorMessage } from '@/lib/error-messages';
 
-export default function LoginPage() {
+function LoginPageContent() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { signIn, signInWithOAuth } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
+
+    // Check for OAuth errors in URL params
+    useEffect(() => {
+        const error = searchParams.get('error');
+        const errorMessage = searchParams.get('message');
+        
+        if (error === 'oauth_failed' || error === 'no_code') {
+            const errorInfo = getErrorMessage(
+                { message: errorMessage || 'OAuth authentication failed' },
+                'oauth'
+            );
+            toast.error(errorInfo.userMessage, {
+                duration: 6000,
+            });
+            if (errorInfo.actionMessage) {
+                setTimeout(() => {
+                    toast(errorInfo.actionMessage!, {
+                        icon: '💡',
+                        duration: 5000,
+                    });
+                }, 1000);
+            }
+            // Clean up URL
+            router.replace('/login');
+        }
+    }, [searchParams, router]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -81,7 +109,8 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex flex-col bg-transparent">
+        <div className="min-h-screen flex flex-col bg-transparent relative">
+            <AnimatedBackground gradientId="waveGradientLogin" />
             <AuthNavbar currentPage="login" />
 
             <main className="flex-1 py-12 px-6">
@@ -201,6 +230,23 @@ export default function LoginPage() {
 
             <AuthFooter />
         </div>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex flex-col bg-transparent relative">
+                <AnimatedBackground gradientId="waveGradientLogin" />
+                <AuthNavbar currentPage="login" />
+                <main className="flex-1 py-12 px-6 flex items-center justify-center">
+                    <div className="text-[#f6f6f6]">Loading...</div>
+                </main>
+                <AuthFooter />
+            </div>
+        }>
+            <LoginPageContent />
+        </Suspense>
     );
 }
 

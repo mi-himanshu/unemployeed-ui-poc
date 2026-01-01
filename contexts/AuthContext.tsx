@@ -117,40 +117,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (typeof window !== 'undefined') {
         const urlParams = new URLSearchParams(window.location.search);
         const oauthToken = urlParams.get('token');
+        const refreshToken = urlParams.get('refresh_token');
         
         if (oauthToken) {
-          // Store token and remove from URL
+          // Store tokens and remove from URL
           localStorage.setItem('auth_token', oauthToken);
+          if (refreshToken) {
+            localStorage.setItem('refresh_token', refreshToken);
+          }
           window.history.replaceState({}, '', window.location.pathname);
           
           // Get session data
-      try {
-        const response = await fetch(`${GATEWAY_URL}/api/v1/auth/session`, {
-          headers: {
-            'Authorization': `Bearer ${oauthToken}`,
-          },
-        });
+          try {
+            const response = await fetch(`${GATEWAY_URL}/api/v1/auth/session`, {
+              headers: {
+                'Authorization': `Bearer ${oauthToken}`,
+              },
+            });
 
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data.user);
-          // Get refresh token from localStorage if available
-          const refreshToken = typeof window !== 'undefined' ? localStorage.getItem('refresh_token') : null;
-          setSession({ 
-            access_token: oauthToken,
-            refresh_token: refreshToken || undefined
-          });
-          setEmailVerified(data.user?.email_verified || false);
-          await refreshProfile();
-          await checkEmailVerification();
+            if (response.ok) {
+              const data = await response.json();
+              setUser(data.user);
+              setSession({ 
+                access_token: oauthToken,
+                refresh_token: refreshToken || undefined
+              });
+              setEmailVerified(data.user?.email_verified || false);
+              await refreshProfile();
+              await checkEmailVerification();
+            } else {
+              console.error('Failed to get OAuth session:', response.statusText);
+            }
+          } catch (error) {
+            console.error('Error getting OAuth session:', error);
+          } finally {
+            setLoading(false);
+          }
+          return;
         }
-      } catch (error) {
-        console.error('Error getting OAuth session:', error);
-      } finally {
-        setLoading(false);
-      }
-      return;
-    }
       }
 
       // Check for existing token in localStorage
@@ -287,20 +291,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signInWithOAuth = async (provider: 'google' | 'apple') => {
     try {
       const redirectTo = `${window.location.origin}/auth/callback`;
-      const response = await fetch(
-        `${GATEWAY_URL}/api/v1/auth/oauth/${provider}?redirect_to=${encodeURIComponent(redirectTo)}`
-      );
+      console.log('[OAuth] Initiating OAuth flow:', {
+        provider,
+        redirectTo,
+        gatewayUrl: GATEWAY_URL,
+      });
+      
+      const oauthUrl = `${GATEWAY_URL}/api/v1/auth/oauth/${provider}?redirect_to=${encodeURIComponent(redirectTo)}`;
+      console.log('[OAuth] Requesting OAuth URL from gateway:', oauthUrl);
+      
+      const response = await fetch(oauthUrl);
 
       if (!response.ok) {
-        throw new Error('Failed to initiate OAuth');
+        const errorData = await response.json().catch(() => ({ detail: response.statusText }));
+        console.error('[OAuth] Failed to get OAuth URL:', {
+          status: response.status,
+          statusText: response.statusText,
+          errorData,
+        });
+        throw new Error(errorData.detail || 'Failed to initiate OAuth');
       }
 
       const data = await response.json();
+      console.log('[OAuth] Received OAuth URL, redirecting to:', data.url);
       
       // Redirect to OAuth URL
       window.location.href = data.url;
     } catch (error: any) {
-      console.error('OAuth error:', error);
+      console.error('[OAuth] Error initiating OAuth:', error);
       throw error;
     }
   };

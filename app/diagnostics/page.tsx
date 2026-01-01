@@ -6,6 +6,7 @@ import Navbar from '@/components/navbar/Navbar';
 import Footer from '@/components/footer';
 import MainHeader from '@/components/main-header';
 import DiagnosticsBody from '@/components/diagnostics-body';
+import AnimatedBackground from '@/components/AnimatedBackground';
 import { diagnosticCategories, emotionalQuotes } from '@/data/diagnostics-data';
 import { DiagnosticCategory, DiagnosticQuestion } from '@/types/diagnostics';
 import { diagnosticsApi, roadmapApi } from '@/lib/api';
@@ -98,8 +99,32 @@ const DiagnosticsPage: React.FC = () => {
         );
         setQuestions(mappedQuestions);
       } catch (err: any) {
-        console.error('Error fetching questions:', err);
-        setError(err.message || 'Failed to load questions. Please try again.');
+        // Log error for debugging
+        console.error('[Diagnostics] Error fetching questions:', {
+          error: err,
+          message: err.message,
+          stack: err.stack,
+          status: err.status,
+          timestamp: new Date().toISOString(),
+        });
+        
+        // Only redirect to error page for backend errors (500+), not client errors
+        // Check if we're already on error page to prevent infinite loops
+        if (typeof window !== 'undefined' && (!err.status || err.status >= 500)) {
+          const isAlreadyOnErrorPage = window.location.pathname === '/error';
+          const hasRedirected = sessionStorage.getItem('error_redirected') === 'true';
+          
+          if (!isAlreadyOnErrorPage && !hasRedirected) {
+            sessionStorage.setItem('error_redirected', 'true');
+            window.location.href = '/error';
+          } else {
+            // Already redirected or on error page - just show generic message
+            setError('Unable to load questions. Please try again.');
+          }
+        } else {
+          // For other errors, show generic message
+          setError('Unable to load questions. Please try again.');
+        }
       } finally {
         setLoading(false);
       }
@@ -178,13 +203,40 @@ const DiagnosticsPage: React.FC = () => {
         const roadmapResponse = await roadmapApi.generateRoadmap(sessionId);
         router.push(`/roadmap?roadmapId=${roadmapResponse.roadmap_id}`);
       } else {
+        // This is a validation error, not a system error - safe to show
         setError('Please provide more detailed answers to complete the diagnostic.');
         setSubmitting(false);
       }
     } catch (err: any) {
-      console.error('Error submitting answers:', err);
-      setError(err.message || 'Failed to submit answers. Please try again.');
-      setSubmitting(false);
+      // Log error for debugging
+      console.error('[Diagnostics] Error submitting answers:', {
+        error: err,
+        message: err.message,
+        stack: err.stack,
+        status: err.status,
+        sessionId,
+        timestamp: new Date().toISOString(),
+      });
+      
+      // Only redirect to error page for backend errors (500+), not client errors
+      // Check if we're already on error page to prevent infinite loops
+      if (typeof window !== 'undefined' && (!err.status || err.status >= 500)) {
+        const isAlreadyOnErrorPage = window.location.pathname === '/error';
+        const hasRedirected = sessionStorage.getItem('error_redirected') === 'true';
+        
+        if (!isAlreadyOnErrorPage && !hasRedirected) {
+          sessionStorage.setItem('error_redirected', 'true');
+          window.location.href = '/error';
+        } else {
+          // Already redirected or on error page - just show generic message
+          setError('Unable to submit answers. Please try again.');
+          setSubmitting(false);
+        }
+      } else {
+        // For other errors, show generic message
+        setError('Unable to submit answers. Please try again.');
+        setSubmitting(false);
+      }
     }
   };
 
@@ -206,20 +258,12 @@ const DiagnosticsPage: React.FC = () => {
     );
   }
 
+  // If there's an error and no questions, redirect to error page
   if (error && questions.length === 0) {
-    return (
-      <div className="bg-[#1a1a1a]/10 min-h-screen flex items-center justify-center">
-        <div className="text-[#f6f6f6] text-center">
-          <p className="mb-4">Error: {error}</p>
-          <button 
-            onClick={() => window.location.reload()} 
-            className="px-4 py-2 bg-[#d1a990] text-[#1a1a1a] rounded"
-          >
-            Retry
-          </button>
-        </div>
-      </div>
-    );
+    if (typeof window !== 'undefined') {
+      window.location.href = '/error';
+    }
+    return null;
   }
 
   if (!currentQuestion) {
@@ -231,20 +275,16 @@ const DiagnosticsPage: React.FC = () => {
   }
 
   return (
-    <div className="">
+    <div className="relative">
+      <AnimatedBackground gradientId="waveGradientDiagnostics" />
       <Navbar />
       <MainHeader
         title="Let's Find What's Holding You Back"
         description="Answer a few guided questions to uncover where you stand, why you feel stuck, and how we can help you evolve — with clarity, confidence, and a roadmap that's truly yours."
         phases={[]}
       />
-      {error && (
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="bg-red-500/20 border border-red-500/50 text-red-200 px-4 py-2 rounded">
-            {error}
-          </div>
-        </div>
-      )}
+      {/* Validation errors (like "provide more detailed answers") are shown as toasts, not inline */}
+      {/* Backend errors are logged and redirect to /error page - never shown to users */}
       <DiagnosticsBody
         categories={updatedCategories}
         currentQuestion={currentQuestion}

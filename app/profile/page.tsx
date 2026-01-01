@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Navbar from '@/components/navbar/Navbar';
 import Footer from '@/components/footer';
 import MainHeader from '@/components/main-header';
+import AnimatedBackground from '@/components/AnimatedBackground';
 import { useAuth } from '@/contexts/AuthContext';
 import { userApi, UserProfile } from '@/lib/api';
 
@@ -97,7 +98,8 @@ const ProfilePage: React.FC = () => {
   }
 
   return (
-    <div className="bg-transparent min-h-screen flex flex-col">
+    <div className="bg-transparent min-h-screen flex flex-col relative">
+      <AnimatedBackground gradientId="waveGradientProfile" />
       <Navbar />
       <MainHeader
         title="Manage Your Profile"
