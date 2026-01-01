@@ -339,5 +339,103 @@ export const authApi = {
       { method: 'GET' }
     );
   },
+
+  /**
+   * Request password reset email
+   */
+  async forgotPassword(email: string): Promise<{ success: boolean; message: string }> {
+    const GATEWAY_URL = process.env.NEXT_PUBLIC_GATEWAY_URL || 'http://localhost:8000';
+    // Get the frontend URL for email redirect
+    const frontendUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
+    const redirectTo = `${frontendUrl}/reset-password`;
+    
+    const response = await fetch(`${GATEWAY_URL}/api/v1/auth/forgot-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, redirect_to: redirectTo }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ detail: response.statusText }));
+      throw new Error(error.detail || 'Failed to send password reset email');
+    }
+
+    return response.json();
+  },
+
+  /**
+   * Reset password with new password
+   */
+  async resetPassword(newPassword: string, accessToken?: string): Promise<{ user: any; session: any }> {
+    const GATEWAY_URL = process.env.NEXT_PUBLIC_GATEWAY_URL || 'http://localhost:8000';
+    const response = await fetch(`${GATEWAY_URL}/api/v1/auth/reset-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ 
+        new_password: newPassword, 
+        ...(accessToken ? { access_token: accessToken } : {}) 
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ detail: response.statusText }));
+      throw new Error(error.detail || 'Failed to reset password');
+    }
+
+    return response.json();
+  },
+
+  /**
+   * Get auth headers for authenticated requests
+   */
+  async getAuthHeaders(): Promise<Record<string, string>> {
+    if (typeof window === 'undefined') return {};
+    
+    const token = localStorage.getItem('access_token') || sessionStorage.getItem('access_token');
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  },
+};
+
+// ==================== Contact API ====================
+
+export interface ContactRequest {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}
+
+export interface ContactResponse {
+  success: boolean;
+  message: string;
+}
+
+export const contactApi = {
+  /**
+   * Submit contact form
+   */
+  async submitContact(data: ContactRequest): Promise<ContactResponse> {
+    const GATEWAY_URL = process.env.NEXT_PUBLIC_GATEWAY_URL || 'http://localhost:8000';
+    
+    // Contact form can be submitted without authentication
+    const response = await fetch(`${GATEWAY_URL}/api/v1/contact`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ detail: response.statusText }));
+      throw new Error(error.detail || 'Failed to submit contact form');
+    }
+
+    return response.json();
+  },
 };
 

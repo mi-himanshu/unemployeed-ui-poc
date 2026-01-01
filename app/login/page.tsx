@@ -3,10 +3,12 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 import AuthNavbar from '@/components/navbar/AuthNavbar';
 import AuthFooter from '@/components/AuthFooter';
 import MainHeader from '@/components/main-header';
 import { useAuth } from '@/contexts/AuthContext';
+import { getErrorMessage } from '@/lib/error-messages';
 
 export default function LoginPage() {
     const router = useRouter();
@@ -14,23 +16,45 @@ export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        setError(null);
 
         try {
             const { error } = await signIn(email, password);
             if (error) {
-                setError(error.message || 'Failed to sign in. Please check your credentials.');
+                const errorInfo = getErrorMessage(error, 'login');
+                toast.error(errorInfo.userMessage, {
+                    duration: 6000,
+                });
+                if (errorInfo.actionMessage) {
+                    // Show action message as a second toast after a short delay
+                    setTimeout(() => {
+                        toast(errorInfo.actionMessage!, {
+                            icon: '💡',
+                            duration: 5000,
+                        });
+                    }, 1000);
+                }
             } else {
+                toast.success('Welcome back! Redirecting to your dashboard...');
                 // Check email verification status - will be handled by dashboard page
                 router.push('/dashboard');
             }
         } catch (err: any) {
-            setError(err.message || 'An unexpected error occurred.');
+            const errorInfo = getErrorMessage(err, 'login');
+            toast.error(errorInfo.userMessage, {
+                duration: 6000,
+            });
+            if (errorInfo.actionMessage) {
+                setTimeout(() => {
+                    toast(errorInfo.actionMessage!, {
+                        icon: '💡',
+                        duration: 5000,
+                    });
+                }, 1000);
+            }
         } finally {
             setLoading(false);
         }
@@ -41,7 +65,18 @@ export default function LoginPage() {
             await signInWithOAuth(provider);
             // OAuth redirects automatically, no need to handle navigation here
         } catch (err: any) {
-            setError(err.message || `Failed to sign in with ${provider}.`);
+            const errorInfo = getErrorMessage(err, 'oauth');
+            toast.error(errorInfo.userMessage, {
+                duration: 6000,
+            });
+            if (errorInfo.actionMessage) {
+                setTimeout(() => {
+                    toast(errorInfo.actionMessage!, {
+                        icon: '💡',
+                        duration: 5000,
+                    });
+                }, 1000);
+            }
         }
     };
 
@@ -64,11 +99,6 @@ export default function LoginPage() {
                             <div className="flex flex-col md:flex-row justify-center items-center gap-8 w-full max-w-5xl">
                                 {/* Left Column - Login Form */}
                                 <div className="flex flex-col items-center justify-center w-full md:w-80">
-                                    {error && (
-                                        <div className="w-full mb-4 p-3 bg-red-500/20 border border-red-500/50 text-red-200 rounded text-sm">
-                                            {error}
-                                        </div>
-                                    )}
                                     <form onSubmit={handleSubmit} className="flex flex-col gap-1 w-full">
                                         <div>
                                             <input

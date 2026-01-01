@@ -3,10 +3,12 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 import AuthNavbar from '@/components/navbar/AuthNavbar';
 import AuthFooter from '@/components/AuthFooter';
 import MainHeader from '@/components/main-header';
 import { useAuth } from '@/contexts/AuthContext';
+import { getErrorMessage } from '@/lib/error-messages';
 
 export default function SignupPage() {
     const router = useRouter();
@@ -15,24 +17,34 @@ export default function SignupPage() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        setError(null);
 
         // Validate passwords match
         if (password !== confirmPassword) {
-            setError('Passwords do not match');
+            toast.error('Passwords do not match', {
+                duration: 4000,
+            });
+            toast('Please make sure both password fields match.', {
+                icon: '💡',
+                duration: 4000,
+            });
             setLoading(false);
             return;
         }
 
         // Validate password strength
         if (password.length < 6) {
-            setError('Password must be at least 6 characters long');
+            toast.error('Password is too short', {
+                duration: 4000,
+            });
+            toast('Please use a password that is at least 6 characters long.', {
+                icon: '💡',
+                duration: 4000,
+            });
             setLoading(false);
             return;
         }
@@ -40,16 +52,45 @@ export default function SignupPage() {
         try {
             const { error } = await signUp(email, password);
             if (error) {
-                setError(error.message || 'Failed to create account. Please try again.');
+                const errorInfo = getErrorMessage(error, 'signup');
+                toast.error(errorInfo.userMessage, {
+                    duration: 6000,
+                });
+                if (errorInfo.actionMessage) {
+                    setTimeout(() => {
+                        toast(errorInfo.actionMessage!, {
+                            icon: '💡',
+                            duration: 5000,
+                        });
+                    }, 1000);
+                }
             } else {
                 setSuccess(true);
+                toast.success('Account created successfully!', {
+                    duration: 3000,
+                });
+                toast('Please check your email to verify your account.', {
+                    icon: '📧',
+                    duration: 4000,
+                });
                 // Redirect to email verification page
                 setTimeout(() => {
                     router.push('/verify-email');
                 }, 2000);
             }
         } catch (err: any) {
-            setError(err.message || 'An unexpected error occurred.');
+            const errorInfo = getErrorMessage(err, 'signup');
+            toast.error(errorInfo.userMessage, {
+                duration: 6000,
+            });
+            if (errorInfo.actionMessage) {
+                setTimeout(() => {
+                    toast(errorInfo.actionMessage!, {
+                        icon: '💡',
+                        duration: 5000,
+                    });
+                }, 1000);
+            }
         } finally {
             setLoading(false);
         }
@@ -60,7 +101,18 @@ export default function SignupPage() {
             await signInWithOAuth(provider);
             // OAuth redirects automatically
         } catch (err: any) {
-            setError(err.message || `Failed to sign up with ${provider}.`);
+            const errorInfo = getErrorMessage(err, 'oauth');
+            toast.error(errorInfo.userMessage, {
+                duration: 6000,
+            });
+            if (errorInfo.actionMessage) {
+                setTimeout(() => {
+                    toast(errorInfo.actionMessage!, {
+                        icon: '💡',
+                        duration: 5000,
+                    });
+                }, 1000);
+            }
         }
     };
 
@@ -83,16 +135,6 @@ export default function SignupPage() {
                             <div className="flex flex-col md:flex-row justify-center items-center gap-8 w-full max-w-5xl">
                                 {/* Left Column - Sign Up Form */}
                                 <div className="flex flex-col items-center justify-center w-full md:w-80">
-                                    {error && (
-                                        <div className="w-full mb-4 p-3 bg-red-500/20 border border-red-500/50 text-red-200 rounded text-sm">
-                                            {error}
-                                        </div>
-                                    )}
-                                    {success && (
-                                        <div className="w-full mb-4 p-3 bg-green-500/20 border border-green-500/50 text-green-200 rounded text-sm">
-                                            Account created successfully! Redirecting...
-                                        </div>
-                                    )}
                                     <form onSubmit={handleSubmit} className="flex flex-col gap-1 w-full">
                                         <div>
                                             <input
